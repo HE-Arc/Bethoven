@@ -51,7 +51,7 @@ class Bet(TimeStampedModel):
     owner = models.ForeignKey(BethovenUser, related_name='BetsOwned', on_delete=models.SET_NULL, null=True)
 
     #When a user does a bet
-    usersBetting = models.ManyToManyField(BethovenUser, through='UserBets', related_name='BetsDone')
+    usersBetting = models.ManyToManyField(BethovenUser, through='UserBet', related_name='BetsDone')
 
 class UserBet(TimeStampedModel):
     """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
