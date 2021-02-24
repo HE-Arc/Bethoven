@@ -24,7 +24,7 @@ class BethovenUser(models.Model):
 class Bet(models.Model):
     """Model that represent a bet with its description, choices, and closure mecanism
 
-    Parameters: title, description, choice1, choice2, isClosed, result
+    Parameters : title, description, choice1, choice2, isClosed, result
     
     Relationship names :
         * bet.owner to see the owner of this bet (nullable)
@@ -45,4 +45,16 @@ class Bet(models.Model):
     usersBetting = models.ManyToManyField(BethovenUser, through='UserBets', related_name='BetsDone')
 
 class UserBet(models.Model):
-    """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-("""
+    """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
+        
+    Parameters: choice, amount
+    
+    Relationship to :
+        * UserBet.user : the user that bet on the bet
+        * UserBet.bet : The bet
+        """
+    #Source : https://docs.djangoproject.com/en/dev/topics/db/models/#extra-fields-on-many-to-many-relationships 'adding fields to many-to-many relationships'
+    user = models.ForeignKey(BethovenUser, on_delete=models.CASCADE)
+    bet = models.ForeignKey(Bet, on_delete=models.CASCADE)
+    choice = models.IntegerField()
+    amount = models.IntegerField()
