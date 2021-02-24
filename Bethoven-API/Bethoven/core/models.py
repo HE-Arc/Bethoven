@@ -3,12 +3,22 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class BethovenUser(models.Model):
+#Timestamped abstract model
+class TimeStampedModel(models.Model):
+    """Abstract model that add the timestamps created_at and updated_at"""
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class BethovenUser(TimeStampedModel):
     """Model linked to the User basic authentication model, while the economy field
 
     Parameters: coins, user for user standard params
+    Has timestamp : created_at, updated_at
     
-    Relationship names :
+    Relationships :
     Usage : 'following = user.following.all()' 
         * user.following to have the users this user follows
         * user.followers to have the user currently following this one
@@ -21,12 +31,13 @@ class BethovenUser(models.Model):
     # many-to-many in itself, needs to be asymetrical
     following = models.ManyToManyField('self', related_name='followers', symmetrical=False)
 
-class Bet(models.Model):
+class Bet(TimeStampedModel):
     """Model that represent a bet with its description, choices, and closure mecanism
 
     Parameters : title, description, choice1, choice2, isClosed, result
+    Has timestamp : created_at, updated_at
     
-    Relationship names :
+    Relationships :
         * bet.owner to see the owner of this bet (nullable)
         * bet.usersBetting to see the users currently betting on this bet
         """
@@ -44,10 +55,11 @@ class Bet(models.Model):
     #When a user does a bet
     usersBetting = models.ManyToManyField(BethovenUser, through='UserBets', related_name='BetsDone')
 
-class UserBet(models.Model):
+class UserBet(TimeStampedModel):
     """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
         
     Parameters: choice, amount
+    Has timestamp : created_at, updated_at
     
     Relationship to :
         * UserBet.user : the user that bet on the bet
@@ -58,3 +70,17 @@ class UserBet(models.Model):
     bet = models.ForeignKey(Bet, on_delete=models.CASCADE)
     choice = models.IntegerField()
     amount = models.IntegerField()
+
+class Comment(TimeStampedModel):
+    """Model that represent a comment from a user on a bet
+    
+    Parameters : text
+    Has timestamp : created_at, updated_at
+    
+    Relationship to :
+        * Comment.user - the user that created this comment
+        * Comment.bet - the bet on which this comment is located
+    """
+    text = models.CharField(max_length=200)
+    user = models.ForeignKey(BethovenUser, on_delete=models.CASCADE)
+    bet = models.ForeignKey(Bet, on_delete=models.CASCADE)
