@@ -30,8 +30,8 @@ urlpatterns = [
     path('api/', include(router.urls)), 
     #User PATHS
     path('login/',include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('logout/',auth.LogoutView.as_view(template_name='user/index.html'),name='logout'),
     path('register/',views.Register.as_view(),name='register'),
-    path('serverstate/',views.ServerState.as_view(),name='coucou')
+    #TestingView
+    path('serverstate/',views.ServerState.as_view(),name='serverstate')
     
 ]

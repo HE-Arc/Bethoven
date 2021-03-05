@@ -24,10 +24,6 @@ class Register(generics.GenericAPIView):
             "user": BethovenUserSerializers(bethovenUser,context=self.get_serializer_context()).data,
             "message": "User Created Successfully.  Now perform Login to get your token",
         })
-# class Login(generics.GenericAPIView):
-#     permission_classes = [permissions.AllowAny]
-#     def post(self, request, *args, **kwargs):
-        
 
 class ServerState(generics.GenericAPIView):
     def get(self, request, *args,  **kwargs):

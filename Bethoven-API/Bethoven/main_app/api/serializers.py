@@ -9,17 +9,12 @@ class BethovenUserSerializers(serializers.ModelSerializer):
         fields = ['user']
 
 class RegisterSerializer(serializers.Serializer):
+
     username = serializers.CharField(max_length=255)
     email = serializers.EmailField()
     password1 = serializers.CharField(max_length=255)
     password2 = serializers.CharField(max_length=255)
-    # class Meta:
-        # model = BethovenUser
-        # fields = ('username', 'email', 'password1', 'password2')
-        # extra_kwargs = {
-        #     'password1':{'write_only': True},
-        #     'password2':{'write_only': True},
-        # }   
+
     def create(self, validated_data):
         username = validated_data['username']
         email = validated_data['email']
