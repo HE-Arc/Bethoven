@@ -25,9 +25,22 @@ class BethovenUser(TimeStampedModel):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     coins = models.IntegerField()
-
+    
     # many-to-many in itself, needs to be asymetrical
     following = models.ManyToManyField('self', related_name='followers', symmetrical=False)
+
+    @classmethod
+    def create_bethoven_user(cls, username, email, password):
+        bethovenUser = cls()
+        bethovenUser.user = User.objects.create_user(username=username, email=email,password=password)
+        bethovenUser.coins = 30
+        bethovenUser.save()
+        return bethovenUser
+    def __str__(self):
+        return self.user.username
+
+
+
 
 class Bet(TimeStampedModel):
     """Model that represent a bet with its description, choices, and closure mecanism

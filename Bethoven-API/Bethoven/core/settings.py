@@ -38,13 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main_app',
+    'crispy_forms',
+    'oauth2_provider',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -70,7 +74,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+                'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES':(
+                'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
