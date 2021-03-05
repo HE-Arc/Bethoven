@@ -28,13 +28,10 @@ urlpatterns = [
 
     #API PATHS
     path('api/', include(router.urls)), 
-    path('api-token-auth/', token_views.obtain_auth_token, name='api-tokn-auth'),
-    path('login/', include('rest_framework.urls')),
     #User PATHS
-    #path('login/',user_view.Login,name='login'),
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('login/',include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logout/',auth.LogoutView.as_view(template_name='user/index.html'),name='logout'),
     path('register/',views.Register.as_view(),name='register'),
-    path('coucou/',views.Coucou.as_view(),name='coucou')
+    path('serverstate/',views.ServerState.as_view(),name='coucou')
     
 ]
