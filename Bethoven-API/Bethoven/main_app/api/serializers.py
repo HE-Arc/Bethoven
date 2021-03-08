@@ -1,27 +1,23 @@
 from rest_framework import serializers 
 from main_app.models import *
+from django.contrib.auth.models import User
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
 
-class BethovenUserSerializers(serializers.ModelSerializer):
+    def create(self, validated_data):
+        print(validated_data)
+        username = validated_data['username']
+        email = validated_data['email']
+        password = validated_data['password']
+        return BethovenUser.create_bethoven_user(username,email,password)
+        #return error
+
+class BethovenUserSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
 
     class Meta:
         model = BethovenUser
-        fields = ['user']
-
-class RegisterSerializer(serializers.Serializer):
-
-    username = serializers.CharField(max_length=255)
-    email = serializers.EmailField()
-    password1 = serializers.CharField(max_length=255)
-    password2 = serializers.CharField(max_length=255)
-
-    def create(self, validated_data):
-        username = validated_data['username']
-        email = validated_data['email']
-        password1 = validated_data['password1']
-        password2 = validated_data['password2']
-        if(password1 == password2):
-            bethovenUser = BethovenUser.create_bethoven_user(username,email,password1)
-            return bethovenUser
-        #return error
-    
+        fields = ['coins', 'user']
