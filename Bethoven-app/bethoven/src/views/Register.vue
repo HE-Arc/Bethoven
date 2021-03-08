@@ -1,11 +1,8 @@
 <template>
-    <v-container fill-height fluid class="pa-0 background-gradient">
+    <v-container fill-height fluid>
         <v-row align="center" justify="center">
             <v-col align="center">
                 <v-card class="mx-auto" max-width="450">
-                    <v-card-title class="primary white--text">
-                        <span class="title">Sign Up</span>
-                    </v-card-title>
                     <v-card-text>
                         <v-text-field
                             label="Name"
@@ -70,8 +67,8 @@
                         v-on:click="signup"
                         >Sign Up</v-btn
                     >
-                    <v-spacer></v-spacer>
-                    <v-flex>
+                    <!-- <v-spacer></v-spacer> -->
+                    <!-- <v-flex>
                         <v-layout column align-center>
                             <v-switch
                                 v-model="$vuetify.theme.dark"
@@ -80,7 +77,7 @@
                                 persistent-hint
                             ></v-switch>
                         </v-layout>
-                    </v-flex>
+                    </v-flex> -->
                 </v-card>
             </v-col>
         </v-row>
@@ -89,7 +86,7 @@
 
 <script>
 import Vue from "vue";
-import Api from "@/api/ApiRequester";
+// import Api from "@/api/ApiRequester";
 // import { ToudoumError } from "@/api/ToudoumError";
 // import { ToudoumError422 } from "@/api/ToudoumError422";
 

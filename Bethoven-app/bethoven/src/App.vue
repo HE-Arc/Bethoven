@@ -4,6 +4,7 @@
         <v-main>
             <Header />
             <router-view></router-view>
+            <Navbar />
         </v-main>
     </v-app>
 </template>
@@ -11,11 +12,11 @@
 <script>
 import Vue from "vue";
 import Header from "@/components/Header.vue";
-// import Drawer from "@/components/Drawer.vue";
-// import "@/assets/styles/main.scss";
+import Navbar from "@/components/Navbar.vue";
+import "@/assets/styles/main.scss";
 
 export default Vue.extend({
-    // name: "App",
-    components: { Header }
+    name: "App",
+    components: { Header,Navbar }
 });
 </script>
