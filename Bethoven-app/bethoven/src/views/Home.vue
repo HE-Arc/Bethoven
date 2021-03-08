@@ -1,18 +1,19 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-container fill-height fluid>
+    <v-row align="start" justify="start">
+      <v-col align="center">
+        <img alt="Vue logo" src="../assets/logo.png" />
+        <p>Home page !</p>
+        <!-- {{ $typedStore.getters.userFullname }} -->
+      </v-col></v-row
+    ></v-container
+  >
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Vue from "vue";
 
-export default {
-  name: 'Home',
-  components: {
-    HelloWorld
-  }
-}
+export default Vue.extend({
+  name: "Home",
+});
 </script>
