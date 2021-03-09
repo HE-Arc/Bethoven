@@ -1,13 +1,15 @@
-
-from rest_framework import viewsets 
 from .serializers import *
-from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import permissions, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from .custom_perm import isSelfUser
+
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -18,22 +20,21 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     #Bethovenuser for this viewset
     queryset = BethovenUser.objects.all()
-    serializer_class = BethovenUserSerializer
 
-    #define permissions
-    permission_classes = [permissions.IsAuthenticated]
-    permission_classes_by_action = {'create': [AllowAny],
-                                #'list': [IsAuthenticated], etc
+    #define permissions - default to "selfuser"
+    permission_classes = [isSelfUser]
+    permission_classes_by_action = {
+                                    'create': [AllowAny],
                                 }
 
     def create(self, request):
         """Register a new user"""
-        #special serializer : this time, we use the 'user' one
+        #special serializer : The 'user' one handles the user data
         serializer = UserSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
-            bethovenUser = serializer.save()
+            user = serializer.save()
             return Response({
-                "user": BethovenUserSerializer(bethovenUser).data,
+                "user": BethovenUserSerializer(user).data,
                 "message": "User Created Successfully.  Now perform Login to get your token",
             })
 
@@ -44,12 +45,18 @@ class UserViewSet(viewsets.ModelViewSet):
             * The user is to be deleted with the bethovenUser
         """
         bethovenUserToDelete = self.get_object()
-        if(request.user.id != bethovenUserToDelete.user.id):
+        """if(request.user.id != bethovenUserToDelete.user.id):
             logger.error(f"User {request.user}[{request.user.id}] tried to delete user {bethovenUserToDelete}[{bethovenUserToDelete.user.id}]")
-            raise serializers.ValidationError("You must be the user to delete !")
-        bethovenUserToDelete.user.delete() #felte on cascade anyway
-        return Response({"message": "User deleted succesfully",})
-        
+            raise serializers.ValidationError("You must be the user to delete !")"""
+        bethovenUserToDelete.user.delete() #delete on cascade
+        return Response({"success":1, "message": "User deleted succesfully",})
+
+    def update(self, request, *args, **kwargs):
+            serializer = BethovenUpdateSerializer(self.get_object(), data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+            return Response("User updated !")
+
     def get_permissions(self):
         try:
             # return permission_classes depending on `action` 
@@ -57,3 +64,15 @@ class UserViewSet(viewsets.ModelViewSet):
         except KeyError: 
             # action is not set return default permission_classes
             return [permission() for permission in self.permission_classes]
+            
+    serializers_by_action = {
+        "create" : UserSerializer,
+        'update' : BethovenUpdateSerializer,
+    }
+
+    def get_serializer_class(self):
+        try:
+            return self.serializers_by_action[self.action]
+        except KeyError: 
+            #default
+            return BethovenUserSerializer
