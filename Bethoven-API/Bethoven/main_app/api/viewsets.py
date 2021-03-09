@@ -2,7 +2,7 @@ from .serializers import *
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .custom_perm import isSelfUser
 
 import logging
@@ -25,6 +25,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [isSelfUser]
     permission_classes_by_action = {
                                     'create': [AllowAny],
+                                    'list': [IsAdminUser],
                                 }
 
     def create(self, request):
@@ -66,7 +67,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return [permission() for permission in self.permission_classes]
             
     serializers_by_action = {
-        "create" : UserSerializer,
+        'create' : UserSerializer,
         'update' : BethovenUpdateSerializer,
     }
 
