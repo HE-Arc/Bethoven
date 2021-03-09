@@ -13,4 +13,3 @@ class ServerState(generics.GenericAPIView):
         return Response({
             "message": "Server is running...",
         })
-   
