@@ -36,11 +36,9 @@ class BethovenUser(TimeStampedModel):
         bethovenUser.coins = 30
         bethovenUser.save()
         return bethovenUser
+
     def __str__(self):
         return self.user.username
-
-
-
 
 class Bet(TimeStampedModel):
     """Model that represent a bet with its description, choices, and closure mecanism

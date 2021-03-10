@@ -1,20 +1,45 @@
 from rest_framework import serializers 
 from main_app.models import *
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from django.contrib.auth.hashers import make_password
 
+##USER SERIALIZERS
+class UserRegisterSerializer(serializers.ModelSerializer):
+    """Register serializer that helps to register a new user (uses the auth.user model)"""
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
 
-class BethovenUserSerializers(serializers.ModelSerializer):
+    def create(self, validated_data):
+        """Create an empty bethovenuser along this auth.user, link them together (uses model function)"""
+        username = validated_data['username']
+        email = validated_data['email']
+        password = validated_data['password']
+        return BethovenUser.create_bethoven_user(username,email,password)
+
+class BethovenUserSerializer(serializers.ModelSerializer):
+    """Bethoven serializer that also fetches the username,email from the auth.user"""
+    username = serializers.CharField(source='user.username')
+    email = serializers.CharField(source='user.email')
 
     class Meta:
         model = BethovenUser
-        fields = ['user']
+        fields = ['coins', 'id', 'username', 'email']
 
-class RegisterSerializer(serializers.Serializer):
+class BethovenUpdateSerializer(serializers.ModelSerializer):
+    """Bethoven serializer that also fetches the username,email from the auth.user"""
+    username = serializers.CharField()
+    email = serializers.CharField()
+    password = serializers.CharField()
+    #Not mandatory to change the password at every update, still a possibility
+    new_password = serializers.CharField(required=False, default=None)
 
-    username = serializers.CharField(max_length=255)
-    email = serializers.EmailField()
-    password1 = serializers.CharField(max_length=255)
-    password2 = serializers.CharField(max_length=255)
+    class Meta:
+        model = BethovenUser
+        fields = ['username', 'email', 'password', 'new_password']
 
+<<<<<<< HEAD
     def create(self, validated_data):
         username = validated_data['username']
         email = validated_data['email']
@@ -35,3 +60,17 @@ class CreateBetSerializer(serializers.ModelSerializer):
         fields = ('title', 'description', 'choice1', 'choice2')
 
     
+=======
+    def update(self, instance, validated_data):
+        """ Updating a user requires that the password fits the old one to change the data. """
+        if not instance.user.check_password(validated_data["password"]) :
+            raise serializers.ValidationError("Your password must be the same")
+
+        user = instance.user
+        user.email = validated_data["email"]
+        user.username = validated_data["username"]
+        if validated_data["new_password"]:
+            user.password = validated_data["new_password"]
+        user.save()
+        return instance.user
+>>>>>>> origin
