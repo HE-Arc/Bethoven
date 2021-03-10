@@ -23,7 +23,7 @@ class BethovenUser(TimeStampedModel):
         * user.BetsOwned to have the bets created by the user
         * user.UserBets to have the bets this user has bet on
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="bethovenUser")
     coins = models.IntegerField()
     
     # many-to-many in itself, needs to be asymetrical
@@ -64,6 +64,17 @@ class Bet(TimeStampedModel):
     #When a user does a bet
     usersBetting = models.ManyToManyField(BethovenUser, through='UserBet', related_name='BetsDone')
 
+    def __str__(self):
+        return self.title
+    
+    def refund(self):
+        for user in self.usersBetting.all():
+            amount = user.userbet_set.get(bet=self).amount
+            user.coins += amount
+            user.save()
+
+    
+
 class UserBet(TimeStampedModel):
     """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
         
@@ -79,6 +90,9 @@ class UserBet(TimeStampedModel):
     bet = models.ForeignKey(Bet, on_delete=models.CASCADE)
     choice = models.IntegerField()
     amount = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.user} bet:{self.amount} on {self.choice}'
 
 class Comment(TimeStampedModel):
     """Model that represent a comment from a user on a bet
