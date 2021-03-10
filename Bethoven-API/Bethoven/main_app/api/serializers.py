@@ -24,4 +24,14 @@ class RegisterSerializer(serializers.Serializer):
             bethovenUser = BethovenUser.create_bethoven_user(username,email,password1)
             return bethovenUser
         #return error
+class BetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bet
+        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result')
+
+class CreateBetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bet
+        fields = ('title', 'description', 'choice1', 'choice2')
+
     

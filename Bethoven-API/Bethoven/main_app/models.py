@@ -66,6 +66,11 @@ class Bet(TimeStampedModel):
     #When a user does a bet
     usersBetting = models.ManyToManyField(BethovenUser, through='UserBet', related_name='BetsDone')
 
+    def __str__(self):
+        return self.title
+
+    
+
 class UserBet(TimeStampedModel):
     """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
         
