@@ -20,18 +20,14 @@ from main_app import views
 from .router import router 
 from rest_framework.authtoken import views as token_views
 
-
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     #API PATHS
     path('api/', include(router.urls)), 
     #User PATHS
-    path('login/',include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('register/',views.Register.as_view(),name='register'),
+    path('login/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+
     #TestingView
-    path('serverstate/',views.ServerState.as_view(),name='serverstate')
-    
+    path('serverstate/', views.ServerState.as_view(),name='serverstate')
 ]
