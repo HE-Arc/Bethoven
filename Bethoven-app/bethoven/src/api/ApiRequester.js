@@ -1,10 +1,10 @@
 import store from '@/store';
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { ILogin } from "./ILogin";
-import { IRegister } from './IRegister';
-import { IToudoumResponse } from './IToudoumResponse';
-import { ToudoumError } from './ToudoumError';
-import { ToudoumError422 } from './ToudoumError422';
+// import { ILogin } from "./ILogin";
+// import { IRegister } from './IRegister';
+// import { IToudoumResponse } from './IToudoumResponse';
+// import { ToudoumError } from './ToudoumError';
+// import { ToudoumError422 } from './ToudoumError422';
 
 /**
  * API Service to link Front-End and Back-End
@@ -27,9 +27,9 @@ class ApiRequester {
     constructor() {
         this.token = null;
         this.instanceAxios = Axios.create({
-            baseURL: `${this.URL}api/`,
+            baseURL: `${this.URL}`,
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "multipart/form-data",
                 Accept: "application/json",
             },
         });
@@ -73,8 +73,12 @@ class ApiRequester {
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
     async login(credentials){
+        console.log("COUCOU");
         try {
-            const response = await this.instanceAxios.post("auth/login", credentials);
+            const response = await this.instanceAxios.post("login/token/", credentials);
+            console.log(response);
+            
+            
             this.token = response.data.data.access_token;
 
             // Store user in Vuex store and sessionStorage
@@ -86,9 +90,9 @@ class ApiRequester {
         } catch (error) {
             const data = error.response.data;
             if (data.data == undefined) {
-                throw new ToudoumError(data.code, data.message, data.status);
+                //throw new ToudoumError(data.code, data.message, data.status);
             } else {
-                throw new ToudoumError422(data.code, data.message, data.status, data.data);
+                //throw new ToudoumError422(data.code, data.message, data.status, data.data);
             }
         }
     }
