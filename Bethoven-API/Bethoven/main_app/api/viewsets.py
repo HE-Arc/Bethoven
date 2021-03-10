@@ -4,34 +4,30 @@ from rest_framework.response import Response
 from rest_framework import permissions, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .custom_perm import isSelfUser
-
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-
 class UserViewSet(viewsets.ModelViewSet):
     """
-    Example empty viewset demonstrating the standard
-    actions that will be handled by a router class.
-    If you're using format suffixes, make sure to also include
-    the `format=None` keyword argument for each action.
+    UserViewSet : Viewset that manages the user : register, CRUD...
+    Login is managed by Oauth2, not by this viewset.
     """
-    #Bethovenuser for this viewset
+    #Model for this viewset
     queryset = BethovenUser.objects.all()
 
-    #define permissions - default to "selfuser"
+    #define permissions - default to "isselfuser" as the sensible data should not be accessed by someone else
     permission_classes = [isSelfUser]
     permission_classes_by_action = {
-                                    'create': [AllowAny],
-                                    'list': [IsAdminUser],
+                                    'create': [AllowAny], #allow anyone to register
+                                    'list': [IsAdminUser], #restrict the "list" view that contains the email and should not be accessible to all people
                                 }
 
     def create(self, request):
         """Register a new user"""
         #special serializer : The 'user' one handles the user data
-        serializer = UserSerializer(data = request.data)
+        serializer = UserRegisterSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
             return Response({
@@ -41,39 +37,25 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         """
-        Little redefinition to verify destroy integrity :
-            * The request user is the one that is to be deleted
-            * The user is to be deleted with the bethovenUser
+        The Destroy function should not only destroy the bethoven user, but also the linked Auth.User.
+        As the delete is on cascade, deleting the user is enough to delete the bethoven user.
         """
-        bethovenUserToDelete = self.get_object()
-        """if(request.user.id != bethovenUserToDelete.user.id):
-            logger.error(f"User {request.user}[{request.user.id}] tried to delete user {bethovenUserToDelete}[{bethovenUserToDelete.user.id}]")
-            raise serializers.ValidationError("You must be the user to delete !")"""
-        bethovenUserToDelete.user.delete() #delete on cascade
+        bethovenUser = self.get_object()
+        bethovenUser.user.delete()
         return Response({"success":1, "message": "User deleted succesfully",})
 
     def update(self, request, *args, **kwargs):
-            serializer = BethovenUpdateSerializer(self.get_object(), data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-            return Response("User updated !")
+        """The update method uses the updateserilalizer that verifies the password is the good one before applying any change"""
+        serializer = BethovenUpdateSerializer(self.get_object(), data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response({"success":1, "message": "User updated succesfully",})
 
     def get_permissions(self):
+        """Function that allow for defining permissions by function"""
         try:
             # return permission_classes depending on `action` 
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError: 
             # action is not set return default permission_classes
             return [permission() for permission in self.permission_classes]
-            
-    serializers_by_action = {
-        'create' : UserSerializer,
-        'update' : BethovenUpdateSerializer,
-    }
-
-    def get_serializer_class(self):
-        try:
-            return self.serializers_by_action[self.action]
-        except KeyError: 
-            #default
-            return BethovenUserSerializer

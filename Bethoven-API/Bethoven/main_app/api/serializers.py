@@ -5,14 +5,14 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 
 ##USER SERIALIZERS
-class UserSerializer(serializers.ModelSerializer):
+class UserRegisterSerializer(serializers.ModelSerializer):
     """Register serializer that helps to register a new user (uses the auth.user model)"""
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
 
     def create(self, validated_data):
-        """Create an empty bethovenuser along this auth.user, link them together (see model function)"""
+        """Create an empty bethovenuser along this auth.user, link them together (uses model function)"""
         username = validated_data['username']
         email = validated_data['email']
         password = validated_data['password']
@@ -32,6 +32,7 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
     username = serializers.CharField()
     email = serializers.CharField()
     password = serializers.CharField()
+    #Not mandatory to change the password at every update, still a possibility
     new_password = serializers.CharField(required=False, default=None)
 
     class Meta:
@@ -39,6 +40,7 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'new_password']
 
     def update(self, instance, validated_data):
+        """ Updating a user requires that the password fits the old one to change the data. """
         if not instance.user.check_password(validated_data["password"]) :
             raise serializers.ValidationError("Your password must be the same")
 

@@ -6,5 +6,4 @@ class isSelfUser(permissions.BasePermission):
 
     def has_permission(self, request, view):
         bethovenUser = view.get_object()
-        print(f"user requesting : {bethovenUser}, user : {request.user}")
         return request.user.id == bethovenUser.user.id
