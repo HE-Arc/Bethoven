@@ -39,28 +39,7 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
         model = BethovenUser
         fields = ['username', 'email', 'password', 'new_password']
 
-<<<<<<< HEAD
-    def create(self, validated_data):
-        username = validated_data['username']
-        email = validated_data['email']
-        password1 = validated_data['password1']
-        password2 = validated_data['password2']
-        if(password1 == password2):
-            bethovenUser = BethovenUser.create_bethoven_user(username,email,password1)
-            return bethovenUser
-        #return error
-class BetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bet
-        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result')
 
-class CreateBetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bet
-        fields = ('title', 'description', 'choice1', 'choice2')
-
-    
-=======
     def update(self, instance, validated_data):
         """ Updating a user requires that the password fits the old one to change the data. """
         if not instance.user.check_password(validated_data["password"]) :
@@ -73,4 +52,14 @@ class CreateBetSerializer(serializers.ModelSerializer):
             user.password = validated_data["new_password"]
         user.save()
         return instance.user
->>>>>>> origin
+
+class BetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bet
+        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result')
+
+class CreateBetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bet
+        fields = ('title', 'description', 'choice1', 'choice2')
+
