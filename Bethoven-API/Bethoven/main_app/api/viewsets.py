@@ -16,6 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     #Model for this viewset
     queryset = BethovenUser.objects.all()
+    serializer_class = BethovenUserSerializer
 
     #define permissions - default to "isselfuser" as the sensible data should not be accessed by someone else
     permission_classes = [isSelfUser]
