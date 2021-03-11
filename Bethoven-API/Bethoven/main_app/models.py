@@ -68,12 +68,11 @@ class Bet(TimeStampedModel):
         return self.title
     
     def refund(self):
-        for user in self.usersBetting.all():
-            amount = user.userbet_set.get(bet=self).amount
-            user.coins += amount
-            user.save()
-
-    
+        """Refund every user that has bet on this bet of their gambled amount"""
+        userBets = UserBet.objects.filter(bet=self)
+        for userBet in userBets:
+            userBet.user.coins += userBet.amount
+            userBet.user.save()
 
 class UserBet(TimeStampedModel):
     """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
