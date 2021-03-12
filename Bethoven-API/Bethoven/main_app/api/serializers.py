@@ -52,7 +52,13 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
             user.password = validated_data["new_password"]
         user.save()
         return instance.user
-
+        
+class BethovenProfileCard(serializers.ModelSerializer):
+    """A sanitized representation of the user available to everyone"""
+    username = serializers.CharField(source='user.username')
+    class Meta:
+        model = BethovenUser
+        fields = ['username', 'coins', 'id'] #might add avatar here if it is added
 class BetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bet
@@ -62,4 +68,3 @@ class CreateBetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bet
         fields = ('title', 'description', 'choice1', 'choice2')
-

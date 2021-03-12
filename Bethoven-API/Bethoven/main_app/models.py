@@ -37,6 +37,33 @@ class BethovenUser(TimeStampedModel):
         bethovenUser.save()
         return bethovenUser
 
+    def get_statistics(self):
+        """ Return the bet statistics of this user """
+        userBets = UserBet.objects.filter(user=self)
+        totalBet = len(userBets)
+        results = {0:0, 1:0}
+        totalBetAmount = 0
+        for userBet in userBets:
+            totalBetAmount += userBet.amount
+            if userBet.bet.result:
+                results[1 if userBet.bet.result == userBet.choice else 0]+=1
+
+        won = results[1]
+        lost = results[0]
+        effectiveness = 1.0 if lost==0 else (won-lost)/(won+lost)
+
+        return {
+            "Won": won,
+            "Lost": lost,
+            "total bet ": totalBet,
+            "totalBetAmount": totalBetAmount,
+            "Effectiveness": effectiveness,
+        }
+
+    def last_bets(self):
+        """ Return the last 5bets of this user """
+        return [userbets.bet for userbets in UserBet.objects.filter(user=self).order_by("created_at")[:5]]
+
     def __str__(self):
         return self.user.username
 
