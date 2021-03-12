@@ -39,6 +39,7 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
         model = BethovenUser
         fields = ['username', 'email', 'password', 'new_password']
 
+
     def update(self, instance, validated_data):
         """ Updating a user requires that the password fits the old one to change the data. """
         if not instance.user.check_password(validated_data["password"]) :
@@ -51,11 +52,18 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
             user.password = validated_data["new_password"]
         user.save()
         return instance.user
-
-
 class BethovenProfileCard(serializers.ModelSerializer):
     """A sanitized representation of the user available to everyone"""
     username = serializers.CharField(source='user.username')
     class Meta:
         model = BethovenUser
         fields = ['username', 'coins'] #might add avatar here if it is added
+class BetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bet
+        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result')
+
+class CreateBetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bet
+        fields = ('title', 'description', 'choice1', 'choice2')
