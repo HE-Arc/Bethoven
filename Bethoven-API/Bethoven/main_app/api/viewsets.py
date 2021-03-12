@@ -8,7 +8,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class UserViewSet(viewsets.ModelViewSet):
     """
     UserViewSet : Viewset that manages the user : register, CRUD...
@@ -52,6 +51,18 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
         return Response({"success":1, "message": "User updated succesfully",})
 
+    @action(detail=True)
+    def profile(self, request, pk):
+        """Added action that serves a user profile"""
+        user = BethovenUser.objects.get(pk=pk)
+        userProfileSerializer = BethovenProfileCard(user)
+        followersProfilesSerializers = BethovenProfileCard(user.following, many=True)
+        return Response({
+            "user" : userProfileSerializer.data,
+            "follows" : followersProfilesSerializers.data,
+            "statistics" : user.get_statistics(),
+        })
+
     def get_permissions(self):
         """Function that allow for defining permissions by function"""
         try:
@@ -60,3 +71,5 @@ class UserViewSet(viewsets.ModelViewSet):
         except KeyError: 
             # action is not set return default permission_classes
             return [permission() for permission in self.permission_classes]
+
+        
