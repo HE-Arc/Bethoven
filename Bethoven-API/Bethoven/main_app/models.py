@@ -37,6 +37,20 @@ class BethovenUser(TimeStampedModel):
         bethovenUser.save()
         return bethovenUser
 
+    def get_statistics(self):
+        """ Return the bet statistics of this user """
+        userBets = UserBet.objects.filter(user=self).values('bet')
+        won = lost = 0
+        for bet in userBets:
+            print(userBets)
+        effectiveness = 0
+
+        return {
+            "Won": won,
+            "Lost": lost,
+            "Effectiveness": effectiveness,
+        }
+
     def __str__(self):
         return self.user.username
 
