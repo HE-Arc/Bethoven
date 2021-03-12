@@ -23,7 +23,9 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes_by_action = {
                                     'create': [AllowAny], #allow anyone to register
                                     'profile': [AllowAny], #allow anyone to acess a profile
-                                    'list': [IsAdminUser], #restrict the "list" view that contains the email and should not be accessible to all people,
+                                    'list': [IsAdminUser], #restrict the "list" view that contains the email and should not be accessible to all people
+                                    'follow': [IsAuthenticated],  #follow/unfollow mecanism
+                                    'unfollow':[IsAuthenticated],
                                 }
 
     def create(self, request):
@@ -68,6 +70,52 @@ class UserViewSet(viewsets.ModelViewSet):
             "statistics" : user.get_statistics(),
             "last bets" : lastBetsSerializer.data,
         })
+
+    @action(detail=True)
+    def follow(self, request, pk):
+        """Make a user follow another user - take care that :
+            * The user is not itself
+            * The user is not currently followed by the requesting user
+        """
+        userToFollow = self.get_object()
+        try:
+            if(userToFollow == request.user.bethovenUser):
+                (success,message) = (0, "Impossible to follow yourself")
+            elif request.user.bethovenUser.following.filter(pk=pk).exists():
+                (success,message) = (0, f"Already following {userToFollow.user.username}")
+            else:
+                request.user.bethovenUser.following.add(userToFollow)
+                (success,message) = (1, f"You are now following {userToFollow.user.username}")
+        except Exception as e:
+            (success,message) = (0, "Follow failed") #ex : Already following user
+        finally:  
+            return Response({   
+                        "success" : success,
+                        "message" : message
+            })
+    
+    @action(detail=True)
+    def unfollow(self, request, pk):
+        """Make a user unfollower another user - take care that :
+            * The user is not itself
+            * The user is currently followed by the requesting user
+        """
+        userToUnfollow = self.get_object()
+        try:
+            if(userToUnfollow == request.user.bethovenUser):
+                (success,message) = (0, "Impossible to unfollow yourself")
+            elif not request.user.bethovenUser.following.filter(pk=pk).exists():
+                (success,message) = (0, f"Can not unfollow {userToUnfollow.user.username} as you do not follow him")
+            else:
+                request.user.bethovenUser.following.remove(userToUnfollow)
+                (success,message) = (1, f"You have unfollowed {userToUnfollow.user.username}")
+        except Exception:
+            (success,message) = (0, "Unfollow failed") #ex : Not following asked user
+        finally:  
+            return Response({   
+                        "success" : success,
+                        "message" : message
+            })
 
     def get_permissions(self):
         """Function that allow for defining permissions by function"""
