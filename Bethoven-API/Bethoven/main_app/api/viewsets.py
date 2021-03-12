@@ -22,7 +22,8 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [isSelfUser]
     permission_classes_by_action = {
                                     'create': [AllowAny], #allow anyone to register
-                                    'list': [IsAdminUser], #restrict the "list" view that contains the email and should not be accessible to all people
+                                    'profile': [AllowAny], #allow anyone to acess a profile
+                                    'list': [IsAdminUser], #restrict the "list" view that contains the email and should not be accessible to all people,
                                 }
 
     def create(self, request):
@@ -55,13 +56,17 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True)
     def profile(self, request, pk):
         """Added action that serves a user profile"""
+        #fetch user
         user = BethovenUser.objects.get(pk=pk)
+        #from user model : fetch profile, followed profile and last bets
         userProfileSerializer = BethovenProfileCard(user)
-        followersProfilesSerializers = BethovenProfileCard(user.following, many=True)
+        followersProfilesSerializers = BethovenProfileCard(user.following, many=True)   #uses serializers with many=true to get
+        lastBetsSerializer = BetSerializer(user.last_bets(), many=True)                 #a standardized list of profiles and bets
         return Response({
             "user" : userProfileSerializer.data,
             "follows" : followersProfilesSerializers.data,
             "statistics" : user.get_statistics(),
+            "last bets" : lastBetsSerializer.data,
         })
 
     def get_permissions(self):
@@ -79,9 +84,9 @@ class BetViewSet(viewsets.ModelViewSet):
 
     permission_classes = [AllowAny]
     permission_classes_by_action = {
-                                    'create': [IsAuthenticated], #allow anyone to register
+                                    'create': [IsAuthenticated], #Must be registered to create a bet
                                     'partial_update': [isBetOwner], #allow th bet owner to close or reveal
-                                    'destroy' :[isBetOwner], #allow th bet owner to delete the bet
+                                    'destroy' :[isBetOwner], #allow th bet owner to delete the bet,
                                 }
 
     def create(self,request):
@@ -99,8 +104,6 @@ class BetViewSet(viewsets.ModelViewSet):
         if not instance.result : 
             instance.refund()
         instance.delete()
-    
-
 
     def update(self, request, pk=None):
         response = {'message': 'Update function is not offered in this path.'}
