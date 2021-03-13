@@ -57,13 +57,19 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)
     def profile(self, request, pk):
-        """Added action that serves a user profile"""
+        """
+        Added action that serves a user profile :
+         * User card
+         * User that this user follows
+         * statistics of this user
+         * The last 5 bets of this user
+        """
         #fetch user
         user = BethovenUser.objects.get(pk=pk)
         #from user model : fetch profile, followed profile and last bets
         userProfileSerializer = BethovenProfileCard(user)
         followersProfilesSerializers = BethovenProfileCard(user.following, many=True)   #uses serializers with many=true to get
-        lastBetsSerializer = BetSerializer(user.last_bets(), many=True)                 #a standardized list of profiles and bets
+        lastBetsSerializer = BetSerializer(user.last_bets(5), many=True)                #a standardized list of profiles and bets
         return Response({
             "user" : userProfileSerializer.data,
             "follows" : followersProfilesSerializers.data,
@@ -73,7 +79,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)
     def follow(self, request, pk):
-        """Make a user follow another user - take care that :
+        """Make a user follow another user - takes care that :
             * The user is not itself
             * The user is not currently followed by the requesting user
         """
@@ -96,7 +102,7 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=True)
     def unfollow(self, request, pk):
-        """Make a user unfollower another user - take care that :
+        """Make a user unfollower another user - takes care that :
             * The user is not itself
             * The user is currently followed by the requesting user
         """
