@@ -60,9 +60,9 @@ class BethovenUser(TimeStampedModel):
             "Effectiveness": effectiveness,
         }
 
-    def last_bets(self):
+    def last_bets(self, number):
         """ Return the last 5bets of this user """
-        return [userbets.bet for userbets in UserBet.objects.filter(user=self).order_by("created_at")[:5]]
+        return [userbets.bet for userbets in UserBet.objects.filter(user=self).order_by("created_at")[:number]]
 
     def __str__(self):
         return self.user.username
