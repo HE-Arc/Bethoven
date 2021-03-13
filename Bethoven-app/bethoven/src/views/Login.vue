@@ -63,6 +63,10 @@ export default Vue.extend({
           password: this.password,
         });
         this.errorPost = "";
+
+        console.log(this.$store.state.tokenUser);
+
+
         this.$router.push({ name: "Home" });
       } catch (e) {
         console.log(e.data+" COUCOU"); // Errors with sent data
