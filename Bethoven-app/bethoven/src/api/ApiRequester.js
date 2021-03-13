@@ -19,6 +19,9 @@ class ApiRequester {
     instanceAxios;
     token;
     URL = "http://localhost:8000/";
+    client_id = "dhVqxxKFZYhvItVvOOU2KtD6EnKJYERcjcvdq8Kh";
+    client_secret = "VaBmlKbzvDtVwDkyzUzcQa6nMU8osXQnLg1D21B859TR2IronyqWGRRPtjUouhSywKx3lEsDD5f33bYr2p9rbKrCesws3G0kHm3oEl02VtWSMyS2uPqZ1x7cGB7CjMit";
+    grant_type = "password";
 
     /**
      * Creates an instance of ApiRequester.
@@ -27,7 +30,7 @@ class ApiRequester {
     constructor() {
         this.token = null;
         this.instanceAxios = Axios.create({
-            baseURL: `${this.URL}`,
+            baseURL: `${this.URL}api/`,
             headers: {
                 "Content-Type": "multipart/form-data",
                 Accept: "application/json",
@@ -53,7 +56,7 @@ class ApiRequester {
      * @static
      * @type {ApiRequester}
      */
-    static get instance(){
+    static get instance() {
         if (!ApiRequester.singleton) {
             this.singleton = new ApiRequester();
         }
@@ -72,20 +75,36 @@ class ApiRequester {
      * @param {ILogin} credentials credentials to log
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
-    async login(credentials){
-        console.log("COUCOU");
+    async login(credentials) {
         try {
-            const response = await this.instanceAxios.post("login/token/", credentials);
-            console.log(response);
-            
-            
-            this.token = response.data.data.access_token;
+
+            var bodyFormData = new FormData();
+            bodyFormData.append("grant_type", this.grant_type);
+            bodyFormData.append(
+                "client_id",
+                this.client_id
+            );
+            bodyFormData.append(
+                "client_secret",
+                this.client_secret
+            );
+            bodyFormData.append("username", credentials.username);
+            bodyFormData.append("password", credentials.password);
+
+            //TO REMOVE
+            console.log(bodyFormData);
+
+            const response = await this.instanceAxios.post("login/token/", bodyFormData);
+            console.log(response.data);
+
+
+            this.token = response.data.access_token;
 
             // Store user in Vuex store and sessionStorage
-            store.actions.logUser(response.data.data.user);
-            window.sessionStorage.setItem("user", JSON.stringify(response.data.data.user));
-            window.sessionStorage.setItem("token", response.data.data.access_token);
-            store.actions.updateUserAvatar();
+            // store.actions.logUser(this.token);
+            // window.sessionStorage.setItem("user", JSON.stringify(response.data.data.user));
+            // window.sessionStorage.setItem("token", response.data.data.access_token);
+            // store.actions.updateUserAvatar();
             return response.data;
         } catch (error) {
             const data = error.response.data;
@@ -97,7 +116,7 @@ class ApiRequester {
         }
     }
 
-    async logout(){
+    async logout() {
         window.sessionStorage.removeItem("user");
         window.sessionStorage.removeItem("token");
         const response = await this.get("logout");
@@ -112,7 +131,7 @@ class ApiRequester {
      * @param {IRegister} account account to register
      * @return {*}  {Promise<AxiosResponse>} API Response
      */
-    async register(account){
+    async register(account) {
         try {
             const response = await this.instanceAxios.post("auth/signup", account);
             this.token = response.data.data.access_token;
@@ -134,7 +153,7 @@ class ApiRequester {
      * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @return {*}  {Promise<AxiosResponse>} API Response
      */
-    getStateServer(){
+    getStateServer() {
         return this.instanceAxios.get("state");
     }
 
@@ -147,7 +166,7 @@ class ApiRequester {
      * @param {string} url url to request 
      * @return {*}  {Promise<T>} Promise of type T
      */
-    async get(url){
+    async get(url) {
         try {
             const response = await this.instanceAxios.get(url, {
                 headers: { Authorization: `Bearer ${this.token}` }
@@ -173,7 +192,7 @@ class ApiRequester {
      * @param {*} [body] body to add in request
      * @return {*}  {Promise<IToudoumResponse>} Api Response
      */
-    async request(method, url, body=null){
+    async request(method, url, body = null) {
 
         const requestConfig = {
             method: method,
@@ -199,7 +218,7 @@ class ApiRequester {
         }
     }
 
-    
+
 
     /**
      * POST data to API
@@ -209,7 +228,7 @@ class ApiRequester {
      * @param {*} body body to post
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
-    async post(url, body){
+    async post(url, body) {
         return this.request("POST", url, body);
     }
 
@@ -221,7 +240,7 @@ class ApiRequester {
      * @param {*} body body to put
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
-    async put(url, body){
+    async put(url, body) {
         return this.request("PUT", url, body);
     }
 
@@ -232,7 +251,7 @@ class ApiRequester {
      * @param {string} url url to request
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
-    delete(url){
+    delete(url) {
         return this.request("DELETE", url);
     }
 
@@ -244,17 +263,17 @@ class ApiRequester {
      * @param {*} body body to PATCH
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
-    async patch(url, body){
+    async patch(url, body) {
         return this.request("PATCH", url, body);
     }
 
-    async formData(url, body){
+    async formData(url, body) {
         const requestConfig = {
             method: "POST",
             url: url,
-            headers: { 
-                Authorization: `Bearer ${this.token}`, 
-                "Content-Type" : "multipart/form-data"
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                "Content-Type": "multipart/form-data"
             }
         };
 
