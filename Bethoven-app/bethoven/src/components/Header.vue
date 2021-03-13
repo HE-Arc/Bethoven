@@ -44,6 +44,7 @@
 <!-- SCRIPT -->
 <script>
 import Vue from "vue";
+import Api from "@/api/ApiRequester";
 
 export default Vue.extend({
   name: "Header",
@@ -53,8 +54,9 @@ export default Vue.extend({
     },
   },
   methods: {
-    logout: function () {
-      this.$store.dispatch('logout');
+    logout: async function () {
+      await Api.logout();
+      // this.$store.dispatch('logout');
       // this.$router.push({ name: "/" });
     },
   },

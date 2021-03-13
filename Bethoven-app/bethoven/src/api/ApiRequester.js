@@ -32,7 +32,7 @@ class ApiRequester {
         this.instanceAxios = Axios.create({
             baseURL: `${this.URL}api/`,
             headers: {
-                "Content-Type": "multipart/form-data",
+                "Content-Type": "application/json",
                 Accept: "application/json",
             },
         });
@@ -101,7 +101,7 @@ class ApiRequester {
             this.token = response.data.access_token;
 
             // Store user in Vuex store and sessionStorage
-            store.dispatch('logUser',this.token);
+            store.dispatch('logUser', this.token);
             window.sessionStorage.setItem("user", credentials.username);
             window.sessionStorage.setItem("token", this.token);
             return response.data;
@@ -116,11 +116,12 @@ class ApiRequester {
     }
 
     async logout() {
+        store.dispatch('logout');
         window.sessionStorage.removeItem("user");
         window.sessionStorage.removeItem("token");
-        const response = await this.get("logout");
+        // const response = await this.get("logout");
         this.token = null;
-        return response;
+        // return response;
     }
 
     /**
@@ -132,16 +133,29 @@ class ApiRequester {
      */
     async register(account) {
         try {
-            const response = await this.instanceAxios.post("auth/signup", account);
-            this.token = response.data.data.access_token;
-            store.actions.logUser(response.data.data.user);
-            return response;
-        } catch (error) {
-            const data = error.response.data;
-            if (data.data == undefined) {
-                throw new ToudoumError(data.code, data.message, data.status);
+            console.log(account);
+
+            if (account.password == account.password_confirmation) {
+                const response = await this.instanceAxios.post("users/", {
+                    "username": account.username,
+                    "password": account.password,
+                    "email": account.email
+                });
+                this.login({ "username": account.username, "password": account.password });
+                // this.token = response.data.data.access_token;
+                // store.actions.logUser(response.data.data.user);
+                return response;
             } else {
-                throw new ToudoumError422(data.code, data.message, data.status, data.data);
+
+            }
+
+
+        } catch (error) {
+            throw error;
+            if (data.data == undefined) {
+                // throw new ToudoumError(data.code, data.message, data.status);
+            } else {
+                // throw new ToudoumError422(data.code, data.message, data.status, data.data);
             }
         }
     }

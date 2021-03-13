@@ -6,6 +6,7 @@
           <v-card-text>
             <v-text-field
               label="Username"
+              :rules="[rules.required]"
               v-model="username"
               :disabled="loading"
               prepend-icon="mdi-account"
