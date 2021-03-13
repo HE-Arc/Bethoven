@@ -2,10 +2,11 @@
 from .serializers import *
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import permissions, viewsets,status
+from rest_framework import permissions, viewsets, status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .custom_perm import isSelfUser , isBetOwner
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes_by_action = {
                                     'create': [AllowAny], #allow anyone to register
                                     'profile': [AllowAny], #allow anyone to acess a profile
+                                    'search': [AllowAny], #Allow anyone to search users
                                     'list': [IsAdminUser], #restrict the "list" view that contains the email and should not be accessible to all people
                                     'follow': [IsAuthenticated],  #follow/unfollow mecanism
                                     'unfollow':[IsAuthenticated],
@@ -92,8 +94,8 @@ class UserViewSet(viewsets.ModelViewSet):
             else:
                 request.user.bethovenUser.following.add(userToFollow)
                 (success,message) = (1, f"You are now following {userToFollow.user.username}")
-        except Exception as e:
-            (success,message) = (0, "Follow failed") #ex : Already following user
+        except Exception:
+            (success,message) = (0, "Follow failed")
         finally:  
             return Response({   
                         "success" : success,
@@ -116,12 +118,31 @@ class UserViewSet(viewsets.ModelViewSet):
                 request.user.bethovenUser.following.remove(userToUnfollow)
                 (success,message) = (1, f"You have unfollowed {userToUnfollow.user.username}")
         except Exception:
-            (success,message) = (0, "Unfollow failed") #ex : Not following asked user
-        finally:  
+            (success,message) = (0, "Unfollow failed")
+        finally:
             return Response({   
                         "success" : success,
                         "message" : message
             })
+
+    @action(detail=False)
+    def search(self, request):
+        """Search a user according to its username"""
+        # fetch request parameters : Username for search, coins for order if necessary
+        username = request.GET.get("username", "")
+        ordering = request.GET.get("coins")
+        #analyse "ordering" value - default at "updated_at", can be coins. asc or desc determine the order of sorting
+        if not ordering:
+            ordering = "updated_at" #default
+        else:
+            if ordering not in ["asc", "desc"] : 
+                #only asc,desc permitted (ex: coincs=asc)
+                return Response({"message": "'coins' parameters only take asc or desc values"}, status=status.HTTP_400_BAD_REQUEST)
+            ordering = f"-coins" if ordering=="desc" else "coins"
+        #Make the request, using a regex to find all user with the parameter as a part of their username
+        users = BethovenUser.objects.filter(user__username__regex=fr"(?i).*{username}.*").order_by(ordering)
+        serializer = BethovenProfileCard(users, many=True) #build a list of profile cards
+        return Response(serializer.data)
 
     def get_permissions(self):
         """Function that allow for defining permissions by function"""
