@@ -133,8 +133,6 @@ class ApiRequester {
      */
     async register(account) {
         try {
-            console.log(account);
-
             if (account.password == account.password_confirmation) {
                 const response = await this.instanceAxios.post("users/", {
                     "username": account.username,
@@ -142,16 +140,12 @@ class ApiRequester {
                     "email": account.email
                 });
                 this.login({ "username": account.username, "password": account.password });
-                // this.token = response.data.data.access_token;
-                // store.actions.logUser(response.data.data.user);
                 return response;
             } else {
-
+                //TODO not the same password
             }
-
-
         } catch (error) {
-            throw error;
+            throw error.response.data;
             if (data.data == undefined) {
                 // throw new ToudoumError(data.code, data.message, data.status);
             } else {

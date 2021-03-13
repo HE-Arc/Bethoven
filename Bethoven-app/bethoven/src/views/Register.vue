@@ -98,7 +98,10 @@ export default Vue.extend({
         });
         this.$router.push({ name: "Home" });
       } catch (e) {
-        console.log(e);
+        if("username" in e){
+            this.errors["username"] = e.username[0];
+        }
+
         // if (e instanceof ToudoumError422) {
         //   // const errors: Error422 = e.data.errors;
         //   this.errors["name"] = errors.name?.[0] ?? "";
