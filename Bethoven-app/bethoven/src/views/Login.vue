@@ -64,7 +64,7 @@ export default Vue.extend({
         });
         this.errorPost = "";
 
-        console.log(this.$store.state.tokenUser);
+        console.log(this.$store.state.isUserLogged);
 
 
         this.$router.push({ name: "Home" });

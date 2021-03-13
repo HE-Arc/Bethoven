@@ -2,16 +2,15 @@
 <template>
   <div>
     <v-app-bar color="primary" dark fixed>
-      <v-toolbar-title to="/" >Bethoven</v-toolbar-title>
+      <v-toolbar-title to="/">Bethoven</v-toolbar-title>
       <v-spacer></v-spacer>
 
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
 
-      <!-- TODO add v-if logged -->
-      <v-btn icon>
-        <span> 25 </span> 
+      <v-btn v-if="logged" icon>
+        <span> 25 </span>
         <v-icon>mdi-alpha-b-circle</v-icon>
       </v-btn>
 
@@ -22,9 +21,15 @@
           </v-btn>
         </template>
 
-        <v-list>
+        <v-list v-if="logged">
+          <!-- TODO ADD SETTINGS -->
+          <v-list-item v-on:click="logout()">
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <v-list v-else>
           <v-list-item to="/register">
-            <v-list-item-title >Register</v-list-item-title>
+            <v-list-item-title>Register</v-list-item-title>
           </v-list-item>
           <v-list-item to="/login">
             <v-list-item-title>Login</v-list-item-title>
@@ -42,17 +47,16 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "Header",
+  computed: {
+    logged() {
+      return this.$store.state.isUserLogged;
+    },
+  },
   methods: {
-    toggleDrawer: function () {
-      this.$typedStore.commit("DRAWER_TOGGLE");
+    logout: function () {
+      this.$store.dispatch('logout');
+      // this.$router.push({ name: "/" });
     },
-    goToRegister: function(){
-      this.$router.push({ name: 'Register' });
-    },
-    goToLogin: function(){
-      this.$router.push({ name: 'Login' });
-    }
-    
   },
 });
 </script>

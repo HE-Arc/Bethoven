@@ -15,14 +15,19 @@ export default new Vuex.Store({
       state.isUserLogged = true;
       state.tokenUser = token;
       return state;
-    }
-
-    // "LOGIN": (state, token) => state.tokenUser = token,
-    // "LOGOUT": (state) => state.tokenUser = null,
+    },
+    logout(state){
+      state.isUserLogged = false;
+      state.tokenUser = null;
+      return state;
+    },
   },
   actions: {
     logUser(state, token) {
       state.commit('logUser',token);
+    },
+    logout(state) {
+      state.commit('logout');
     }
   },
   modules: {

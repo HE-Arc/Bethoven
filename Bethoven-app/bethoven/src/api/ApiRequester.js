@@ -101,11 +101,9 @@ class ApiRequester {
             this.token = response.data.access_token;
 
             // Store user in Vuex store and sessionStorage
-            // store.actions.logUser(this.token);
             store.dispatch('logUser',this.token);
-            // window.sessionStorage.setItem("user", JSON.stringify(response.data.data.user));
-            // window.sessionStorage.setItem("token", response.data.data.access_token);
-            // store.actions.updateUserAvatar();
+            window.sessionStorage.setItem("user", credentials.username);
+            window.sessionStorage.setItem("token", this.token);
             return response.data;
         } catch (error) {
             const data = error.response.data;
