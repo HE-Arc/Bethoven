@@ -167,12 +167,12 @@ class ApiRequester {
             });
             return response.data;
         } catch (error) {
-            const data = error.response.data;
-            if (data.data == undefined) {
-                throw new ToudoumError(data.code, data.message, data.status);
-            } else {
-                throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            }
+            throw error.response.data;
+            // if (data.data == undefined) {
+            //     throw new ToudoumError(data.code, data.message, data.status);
+            // } else {
+            //     throw new ToudoumError422(data.code, data.message, data.status, data.data);
+            // }
         }
     }
 
@@ -202,12 +202,12 @@ class ApiRequester {
             const response = await this.instanceAxios(requestConfig);
             return response.data;
         } catch (error) {
-            const data = error.response.data;
-            if (data.data == undefined) {
-                // throw new ToudoumError(data.code, data.message, data.status);
-            } else {
-                // throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            }
+            throw error.response.data;
+            // if (data.data == undefined) {
+            //     // throw new ToudoumError(data.code, data.message, data.status);
+            // } else {
+            //     // throw new ToudoumError422(data.code, data.message, data.status, data.data);
+            // }
         }
     }
 
@@ -275,12 +275,12 @@ class ApiRequester {
             const response = await this.instanceAxios(requestConfig);
             return response.data;
         } catch (error) {
-            const data = error.response.data;
-            if (data.data == undefined) {
-                throw new ToudoumError(data.code, data.message, data.status);
-            } else {
-                throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            }
+            throw error.response.data;
+            // if (data.data == undefined) {
+            //     throw new ToudoumError(data.code, data.message, data.status);
+            // } else {
+            //     throw new ToudoumError422(data.code, data.message, data.status, data.data);
+            // }
         }
     }
 
