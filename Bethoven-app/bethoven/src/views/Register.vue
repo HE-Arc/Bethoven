@@ -90,16 +90,20 @@ export default Vue.extend({
     signup: async function () {
       this.loading = true;
       try {
-        await Api.register({
-          username: this.username,
-          email: this.email,
-          password: this.password,
-          password_confirmation: this.passwordConfirmation,
-        });
-        this.$router.push({ name: "Home" });
+        if (this.password == this.passwordConfirmation) {
+          await Api.register({
+            username: this.username,
+            email: this.email,
+            password: this.password,
+            password_confirmation: this.passwordConfirmation,
+          });
+          this.$router.push({ name: "Home" });
+        }else{
+          this.errors['password'] = "Not the same password";
+        }
       } catch (e) {
-        if("username" in e){
-            this.errors["username"] = e.username[0];
+        if ("username" in e) {
+          this.errors["username"] = e.username[0];
         }
 
         // if (e instanceof ToudoumError422) {

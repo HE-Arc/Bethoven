@@ -133,17 +133,14 @@ class ApiRequester {
      */
     async register(account) {
         try {
-            if (account.password == account.password_confirmation) {
-                const response = await this.instanceAxios.post("users/", {
-                    "username": account.username,
-                    "password": account.password,
-                    "email": account.email
-                });
-                this.login({ "username": account.username, "password": account.password });
-                return response;
-            } else {
-                //TODO not the same password
-            }
+            const response = await this.instanceAxios.post("users/", {
+                "username": account.username,
+                "password": account.password,
+                "email": account.email
+            });
+            this.login({ "username": account.username, "password": account.password });
+            return response;
+
         } catch (error) {
             throw error.response.data;
             if (data.data == undefined) {
