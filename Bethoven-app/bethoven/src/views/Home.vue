@@ -18,10 +18,10 @@ export default Vue.extend({
   name: "Home",
   async beforeMount () {
     this.response = await Api.get("bet/");
-    await Api.post("bet/",{"title":"bet04",
-    "description":"bla",
-    "choice1":"Oui",
-    "choice2":"Non"});
+    // await Api.post("bet/",{"title":"bet04",
+    // "description":"bla",
+    // "choice1":"Oui",
+    // "choice2":"Non"});
   },
   data() {
       return {
