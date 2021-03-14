@@ -10,7 +10,6 @@ import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
  * API Service to link Front-End and Back-End
  * Allow developer to contact an APi with a Singleton pattern
  * 
- * @author Lucas Fridez <lucas.fridez@he-arc.ch>
  * @class ApiRequester
  */
 class ApiRequester {
@@ -25,7 +24,6 @@ class ApiRequester {
 
     /**
      * Creates an instance of ApiRequester.
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      */
     constructor() {
         this.token = null;
@@ -41,7 +39,6 @@ class ApiRequester {
     /**
      * Get Url
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @return {*} 
      */
     getUrl() {
@@ -51,7 +48,6 @@ class ApiRequester {
     /**
      * Get ApiRequester Instance (or create it if inexistant)
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @readonly
      * @static
      * @type {ApiRequester}
@@ -60,7 +56,6 @@ class ApiRequester {
         if (!ApiRequester.singleton) {
             this.singleton = new ApiRequester();
         }
-
         return ApiRequester.singleton;
     }
 
@@ -71,7 +66,6 @@ class ApiRequester {
     /**
      * Log User in Application and store his token
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @param {ILogin} credentials credentials to log
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
@@ -96,7 +90,6 @@ class ApiRequester {
 
             const response = await this.instanceAxios.post("login/token/", bodyFormData);
             console.log(response.data);
-
 
             this.token = response.data.access_token;
 
@@ -127,7 +120,6 @@ class ApiRequester {
     /**
      * Register an Account
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @param {IRegister} account account to register
      * @return {*}  {Promise<AxiosResponse>} API Response
      */
@@ -154,7 +146,6 @@ class ApiRequester {
     /**
      * Check if API server is UP
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @return {*}  {Promise<AxiosResponse>} API Response
      */
     getStateServer() {
@@ -165,7 +156,6 @@ class ApiRequester {
     /**
      * Request a GET Method
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @template T type to cast the data got from API
      * @param {string} url url to request 
      * @return {*}  {Promise<T>} Promise of type T
@@ -189,7 +179,6 @@ class ApiRequester {
     /**
      * Request the API
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @private
      * @param {("GET" | "POST" | "PUT" | "DELETE" | "PATCH")} method string method to use
      * @param {string} url url to request
@@ -215,9 +204,9 @@ class ApiRequester {
         } catch (error) {
             const data = error.response.data;
             if (data.data == undefined) {
-                throw new ToudoumError(data.code, data.message, data.status);
+                // throw new ToudoumError(data.code, data.message, data.status);
             } else {
-                throw new ToudoumError422(data.code, data.message, data.status, data.data);
+                // throw new ToudoumError422(data.code, data.message, data.status, data.data);
             }
         }
     }
@@ -227,7 +216,6 @@ class ApiRequester {
     /**
      * POST data to API
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @param {string} url url to request
      * @param {*} body body to post
      * @return {*}  {Promise<IToudoumResponse>} API Response
@@ -239,7 +227,6 @@ class ApiRequester {
     /**
      * PUT data to API
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @param {string} url url to request
      * @param {*} body body to put
      * @return {*}  {Promise<IToudoumResponse>} API Response
@@ -251,7 +238,6 @@ class ApiRequester {
     /**
      * DELETE method to API
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @param {string} url url to request
      * @return {*}  {Promise<IToudoumResponse>} API Response
      */
@@ -262,7 +248,6 @@ class ApiRequester {
     /**
      * PATCH method to API
      *
-     * @author Lucas Fridez <lucas.fridez@he-arc.ch>
      * @param {string} url url to request
      * @param {*} body body to PATCH
      * @return {*}  {Promise<IToudoumResponse>} API Response
