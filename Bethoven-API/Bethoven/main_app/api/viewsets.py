@@ -10,7 +10,25 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class UserViewSet(viewsets.ModelViewSet):
+class ViewsetFunctionPermissions(viewsets.ModelViewSet):
+    """ 
+    viewset thet allows to determine permissions by function :
+        * Define permision_classes = [] as default permissions
+        * Define permission_classes_by_action = { 'fct' : [permission], ... } as permission tailored for actions
+    """
+    class Meta:
+        abstract = True
+
+    def get_permissions(self):
+        """Function that allow for defining permissions by function"""
+        try:
+            # return permission_classes depending on `action` 
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError: 
+            # action is not set return default permission_classes
+            return [permission() for permission in self.permission_classes]
+
+class UserViewSet(ViewsetFunctionPermissions):
     """
     UserViewSet : Viewset that manages the user : register, CRUD...
     Login is managed by Oauth2, not by this viewset.
@@ -23,11 +41,12 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [isSelfUser]
     permission_classes_by_action = {
                                     'create': [AllowAny], #allow anyone to register
-                                    'profile': [AllowAny], #allow anyone to acess a profile
+                                    'retrieve': [AllowAny], #allow anyone to acess a profile
                                     'search': [AllowAny], #Allow anyone to search users
                                     'list': [IsAdminUser], #restrict the "list" view that contains the email and should not be accessible to all people
                                     'follow': [IsAuthenticated],  #follow/unfollow mecanism
-                                    'unfollow':[IsAuthenticated],
+                                    'unfollow': [IsAuthenticated],
+                                    'me': [IsAuthenticated], #settings : Must be authenticated, will find user by its access token
                                 }
 
     def create(self, request):
@@ -57,10 +76,9 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
         return Response({"success":1, "message": "User updated succesfully",})
 
-    @action(detail=True)
-    def profile(self, request, pk):
+    def retrieve(self, request, pk):
         """
-        Added action that serves a user profile :
+        The detail view returns a user profile :
          * User card
          * User that this user follows
          * statistics of this user
@@ -79,9 +97,20 @@ class UserViewSet(viewsets.ModelViewSet):
             "last bets" : lastBetsSerializer.data,
         })
 
+    @action(detail=False)
+    def me(self, request):   
+        """ 
+        The "me" endpoint allow users to access their personnal settings (username, email, id, etc...) by providing their access token. 
+        Usefull to retrieve personnal informations (Except password, which is not sent).
+        """
+        user = request.user.bethovenUser
+        serializer = BethovenUserSerializer(user)
+        return Response(serializer.data)   
+
     @action(detail=True)
     def follow(self, request, pk):
-        """Make a user follow another user - takes care that :
+        """
+        Make a user follow another user - takes care that :
             * The user is not itself
             * The user is not currently followed by the requesting user
         """
@@ -144,16 +173,8 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = BethovenProfileCard(users, many=True) #build a list of profile cards
         return Response(serializer.data)
 
-    def get_permissions(self):
-        """Function that allow for defining permissions by function"""
-        try:
-            # return permission_classes depending on `action` 
-            return [permission() for permission in self.permission_classes_by_action[self.action]]
-        except KeyError: 
-            # action is not set return default permission_classes
-            return [permission() for permission in self.permission_classes]
-
-class BetViewSet(viewsets.ModelViewSet):
+class BetViewSet(ViewsetFunctionPermissions):
+    """ Bet Viewset (controller) """
     queryset = Bet.objects.all()
     serializer_class = BetSerializer
 
@@ -183,12 +204,3 @@ class BetViewSet(viewsets.ModelViewSet):
     def update(self, request, pk=None):
         response = {'message': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
-
-    def get_permissions(self):
-        """Function that allow for defining permissions by function"""
-        try:
-            # return permission_classes depending on `action` 
-            return [permission() for permission in self.permission_classes_by_action[self.action]]
-        except KeyError: 
-            # action is not set return default permission_classes
-            return [permission() for permission in self.permission_classes]
