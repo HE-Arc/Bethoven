@@ -185,6 +185,9 @@ class BetViewSet(viewsets.ModelViewSet):
         response = {'message': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
+    def partial_update(self,request,pk):
+        pass
+
     def get_permissions(self):
         """Function that allow for defining permissions by function"""
         try:
