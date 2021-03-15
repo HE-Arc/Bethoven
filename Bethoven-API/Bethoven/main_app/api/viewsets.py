@@ -161,7 +161,8 @@ class BetViewSet(viewsets.ModelViewSet):
     permission_classes_by_action = {
                                     'create': [IsAuthenticated], #Must be registered to create a bet
                                     'partial_update': [isBetOwner], #allow th bet owner to close or reveal
-                                    'destroy' :[isBetOwner], #allow th bet owner to delete the bet,
+                                    'destroy' : [isBetOwner], #allow th bet owner to delete the bet,
+                                    'gamble' : [IsAuthenticated]
                                 }
 
     def create(self,request):
@@ -192,3 +193,35 @@ class BetViewSet(viewsets.ModelViewSet):
         except KeyError: 
             # action is not set return default permission_classes
             return [permission() for permission in self.permission_classes]
+
+    @action( detail = True, methods=['post'])
+    def gamble(self,request,pk):
+        serializer = GambleUserBetSerializer(data = request.data)
+
+        user = request.user.bethovenUser
+        bet = Bet.objects.get(pk=pk)
+
+        if serializer.is_valid(raise_exception = True):
+            if(bet.isClosed):
+                return Response({"message" : 'This bet is closed !'})
+
+            if UserBet.objects.filter(user=user,bet=bet):
+                return Response({"message" : 'You have already bet !'})
+            
+
+            amount = request.data['amount']
+            choice = request.data['choice']
+
+            if user.coins < amount :
+                return Response({"message" : 'You are ruined !'})
+
+
+            userBet = UserBet(amount=amount,choice=choice,user=user,bet=bet)
+            userBet.save()
+            user.coins -= amount
+            user.save()
+            return Response({
+                "Your bet" : UserBetSerializer(userBet).data,
+                "message": "Bet Successfully."
+            })
+           

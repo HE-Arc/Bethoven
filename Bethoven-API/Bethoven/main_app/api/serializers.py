@@ -68,3 +68,12 @@ class CreateBetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bet
         fields = ('title', 'description', 'choice1', 'choice2')
+
+class UserBetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBet
+        fields = ('user','amount', 'choice','bet')
+class GambleUserBetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBet
+        fields = ('amount', 'choice')
