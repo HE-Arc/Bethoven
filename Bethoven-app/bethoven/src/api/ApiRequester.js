@@ -59,8 +59,13 @@ class ApiRequester {
         return ApiRequester.singleton;
     }
 
+    /**
+     * Set properties token in instance of APIrequester and vuex store
+     * @param {*} token 
+     */
     setToken(token) {
         this.token = token;
+        store.dispatch('logUser', this.token);
     }
 
     /**
