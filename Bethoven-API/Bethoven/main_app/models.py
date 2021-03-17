@@ -101,8 +101,14 @@ class Bet(TimeStampedModel):
             userBet.user.coins += userBet.amount
             userBet.user.save()
 
+    @classmethod
+    def trending_bets_from_id(cls, id, number, hot=False):
+        orderBy = "created_at" if hot else "updated_at"
+        return Bet.objects.order_by(orderBy).filter(id__gt=id)[:number]
+
 class UserBet(TimeStampedModel):
-    """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
+    """
+    Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
         
     Parameters: choice, amount
     Has timestamp : created_at, updated_at
@@ -110,7 +116,7 @@ class UserBet(TimeStampedModel):
     Relationship to :
         * UserBet.user : the user that bet on the bet
         * UserBet.bet : The bet
-        """
+    """
     #Source : https://docs.djangoproject.com/en/dev/topics/db/models/#extra-fields-on-many-to-many-relationships 'adding fields to many-to-many relationships'
     user = models.ForeignKey(BethovenUser, on_delete=models.CASCADE)
     bet = models.ForeignKey(Bet, on_delete=models.CASCADE)

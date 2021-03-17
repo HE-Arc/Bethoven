@@ -204,3 +204,9 @@ class BetViewSet(ViewsetFunctionPermissions):
     def update(self, request, pk=None):
         response = {'message': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    def list(self, request):
+        id = int(request.GET["id"])
+        number = int(request.GET["number"])
+        bets = Bet.trending_bets_from_id(id, number)
+        return Response(BetSerializer(bets, many=True).data)
