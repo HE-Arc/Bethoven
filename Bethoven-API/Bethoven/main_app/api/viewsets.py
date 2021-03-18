@@ -186,7 +186,13 @@ class BetViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
     def partial_update(self,request,pk):
-        pass
+
+        serializer = PartialUpdateBetSerializer(self.get_object(), data = request.data)
+
+        if serializer.is_valid(raise_exception = True):
+            serializer.save()
+            return Response({"message": "Bet updated succesfully",})  
+
 
     def get_permissions(self):
         """Function that allow for defining permissions by function"""

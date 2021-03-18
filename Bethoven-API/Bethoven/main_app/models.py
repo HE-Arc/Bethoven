@@ -66,6 +66,9 @@ class BethovenUser(TimeStampedModel):
 
     def __str__(self):
         return self.user.username
+    
+    def __hash__(self):
+        return self.id
 
 class Bet(TimeStampedModel):
     """Model that represent a bet with its description, choices, and closure mecanism
@@ -100,6 +103,31 @@ class Bet(TimeStampedModel):
         for userBet in userBets:
             userBet.user.coins += userBet.amount
             userBet.user.save()
+
+    def give(self):
+        """Give to winners the amount """
+
+        userBets = UserBet.objects.filter(bet=self)
+        winner = dict()
+        totalBetAmount = 0
+        totalBetWinner = 0
+        for userBet in userBets:
+            totalBetAmount += userBet.amount
+            print(userBet.bet.result)
+            if userBet.choice == userBet.bet.result:
+                totalBetWinner += userBet.amount
+                winner[userBet.user] = userBet.amount
+
+        print(f'total amout :{totalBetAmount}')
+        print(winner)
+        for user,amount in winner.items():
+            print(f'before gain : {user.coins} of {user}')
+            gain = (amount / totalBetWinner) * totalBetAmount
+            user.coins += int(round(gain))
+            print(f'after gain : {user.coins} of {user}')
+
+
+
 
 class UserBet(TimeStampedModel):
     """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
