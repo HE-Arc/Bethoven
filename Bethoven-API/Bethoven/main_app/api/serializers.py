@@ -83,15 +83,14 @@ class PartialUpdateBetSerializer(serializers.ModelSerializer):
             if not instance.isClosed and closed :
                 instance.isClosed = closed
                 instance.save()
-                return instance
+            return instance
         if validated_data["result"]:
             result = validated_data["result"]
-            if((result == 1 or result == 0) and  instance.result is None):
+            if((result == 1 or result == 0) and  instance.result is None and instance.isClosed):
                 instance.result = result
                 instance.save()
                 instance.give()
-                return instance
-        return instance
+            return instance
         
 
 

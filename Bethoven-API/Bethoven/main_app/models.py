@@ -113,18 +113,15 @@ class Bet(TimeStampedModel):
         totalBetWinner = 0
         for userBet in userBets:
             totalBetAmount += userBet.amount
-            print(userBet.bet.result)
             if userBet.choice == userBet.bet.result:
                 totalBetWinner += userBet.amount
                 winner[userBet.user] = userBet.amount
 
-        print(f'total amout :{totalBetAmount}')
-        print(winner)
+
         for user,amount in winner.items():
-            print(f'before gain : {user.coins} of {user}')
             gain = (amount / totalBetWinner) * totalBetAmount
             user.coins += int(round(gain))
-            print(f'after gain : {user.coins} of {user}')
+            user.save()
 
 
 
