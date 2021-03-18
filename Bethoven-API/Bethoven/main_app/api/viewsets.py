@@ -182,7 +182,8 @@ class BetViewSet(ViewsetFunctionPermissions):
     permission_classes_by_action = {
                                     'create': [IsAuthenticated], #Must be registered to create a bet
                                     'partial_update': [isBetOwner], #allow th bet owner to close or reveal
-                                    'destroy' :[isBetOwner], #allow th bet owner to delete the bet,
+                                    'destroy' : [isBetOwner], #allow th bet owner to delete the bet,
+                                    'gamble' : [IsAuthenticated]
                                 }
 
     def create(self,request):
@@ -203,4 +204,58 @@ class BetViewSet(ViewsetFunctionPermissions):
 
     def update(self, request, pk=None):
         response = {'message': 'Update function is not offered in this path.'}
+<<<<<<< HEAD
         return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    def partial_update(self,request,pk):
+
+        serializer = PartialUpdateBetSerializer(self.get_object(), data = request.data)
+
+        if serializer.is_valid(raise_exception = True):
+            serializer.save()
+            return Response({"message": "Bet updated succesfully",})  
+
+
+    def get_permissions(self):
+        """Function that allow for defining permissions by function"""
+        try:
+            # return permission_classes depending on `action` 
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError: 
+            # action is not set return default permission_classes
+            return [permission() for permission in self.permission_classes]
+
+    @action( detail = True, methods=['post'])
+    def gamble(self,request,pk):
+        serializer = GambleUserBetSerializer(data = request.data)
+
+        user = request.user.bethovenUser
+        bet = Bet.objects.get(pk=pk)
+
+        if serializer.is_valid(raise_exception = True):
+            if(bet.isClosed):
+                return Response({"message" : 'This bet is closed !'})
+
+            if UserBet.objects.filter(user=user,bet=bet):
+                return Response({"message" : 'You have already bet !'})
+            
+
+            amount = request.data['amount']
+            choice = request.data['choice']
+
+            if user.coins < amount :
+                return Response({"message" : 'You are ruined !'})
+
+
+            userBet = UserBet(amount=amount,choice=choice,user=user,bet=bet)
+            userBet.save()
+            user.coins -= amount
+            user.save()
+            return Response({
+                "Your bet" : UserBetSerializer(userBet).data,
+                "message": "Bet Successfully."
+            })
+           
+=======
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
+>>>>>>> 98f43df198f1b5fd11f743e3e3e73e1e584694a7
