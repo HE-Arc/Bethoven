@@ -204,7 +204,6 @@ class BetViewSet(ViewsetFunctionPermissions):
 
     def update(self, request, pk=None):
         response = {'message': 'Update function is not offered in this path.'}
-<<<<<<< HEAD
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
     def partial_update(self,request,pk):
@@ -256,6 +255,3 @@ class BetViewSet(ViewsetFunctionPermissions):
                 "message": "Bet Successfully."
             })
            
-=======
-        return Response(response, status=status.HTTP_403_FORBIDDEN)
->>>>>>> 98f43df198f1b5fd11f743e3e3e73e1e584694a7
