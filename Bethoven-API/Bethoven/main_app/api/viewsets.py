@@ -184,7 +184,8 @@ class BetViewSet(ViewsetFunctionPermissions):
                                     'partial_update': [isBetOwner], #allow th bet owner to close or reveal
                                     'destroy' : [isBetOwner], #allow th bet owner to delete the bet,
                                     'gamble' : [IsAuthenticated], #Must be authenticated to gamble (coins from account)
-                                    'home' : [IsAuthenticated], #Must be authenticated to retrieve friend bets
+                                    'home' : [IsAuthenticated], #Must be authenticated to retrieve friend bets.
+                                    'mybet' : [IsAuthenticated] #bet by user - must be authenticated
                                 }
 
     def create(self,request):
@@ -214,8 +215,8 @@ class BetViewSet(ViewsetFunctionPermissions):
         """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
         serializer = FeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
-            hot = serializer.data["order"]
-            bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], hot)
+            trending = serializer.data["order"]
+            bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], trending)
             return Response(BetSerializer(bets, many=True).data)
 
     @action(detail = False)
@@ -224,6 +225,14 @@ class BetViewSet(ViewsetFunctionPermissions):
         serializer = FeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
             bets = Bet.friend_bets(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
+            return Response(BetSerializer(bets, many=True).data)
+
+    @action(detail = False)
+    def mybet(self, request):
+        """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
+        serializer = FeedSerializer(data = request.query_params)
+        if serializer.is_valid(raise_exception = True):
+            bets = Bet.betByUser(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
             return Response(BetSerializer(bets, many=True).data)
 
     def partial_update(self,request,pk):
