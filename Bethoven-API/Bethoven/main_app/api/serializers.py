@@ -72,7 +72,7 @@ class CreateBetSerializer(serializers.ModelSerializer):
         model = Bet
         fields = ('title', 'description', 'choice1', 'choice2')
 
-        class PartialUpdateBetSerializer(serializers.ModelSerializer):
+class PartialUpdateBetSerializer(serializers.ModelSerializer):
     isClosed = serializers.BooleanField(required=False,default=None)
     result = serializers.IntegerField(required=False,default=None)
     class Meta:
