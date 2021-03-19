@@ -66,6 +66,9 @@ class BethovenUser(TimeStampedModel):
 
     def __str__(self):
         return self.user.username
+    
+    def __hash__(self):
+        return self.id
 
 class Bet(TimeStampedModel):
     """Model that represent a bet with its description, choices, and closure mecanism
@@ -121,6 +124,25 @@ class Bet(TimeStampedModel):
         if id is not None :
             bets = bets.filter(id__lt=id)
         return bets[:number]
+      
+    def give(self):
+        """Give to winners the amount """
+
+        userBets = UserBet.objects.filter(bet=self)
+        winner = dict()
+        totalBetAmount = 0
+        totalBetWinner = 0
+        for userBet in userBets:
+            totalBetAmount += userBet.amount
+            if userBet.choice == userBet.bet.result:
+                totalBetWinner += userBet.amount
+                winner[userBet.user] = userBet.amount
+
+
+        for user,amount in winner.items():
+            gain = (amount / totalBetWinner) * totalBetAmount
+            user.coins += int(round(gain))
+            user.save()
 
 class UserBet(TimeStampedModel):
     """
