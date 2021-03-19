@@ -104,6 +104,27 @@ class Bet(TimeStampedModel):
             userBet.user.coins += userBet.amount
             userBet.user.save()
 
+    def bet_ratio(self):
+        """Return the ratio choice0 / choice1 of this bet"""
+        choiceCount = dict()
+        total=0
+        for userBet in UserBet.objects.filter(bet=self):
+            total+=1
+            try:
+                choiceCount[userBet.choice]+=1
+            except KeyError :
+                choiceCount[userBet.choice]=1
+        return {k : int(100*round(v/total,2)) for k,v in choiceCount.items()}
+
+    @classmethod
+    def trending_bets_from_id(cls, number, id, hot=False):
+        """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
+        orderBy = "created_at" if hot else "updated_at"
+        bets = Bet.objects.filter(isClosed=False).order_by('-pk', orderBy)
+        if id is not None :
+            bets = bets.filter(id__lt=id)
+        return bets[:number]
+      
     def give(self):
         """Give to winners the amount """
 
@@ -123,11 +144,9 @@ class Bet(TimeStampedModel):
             user.coins += int(round(gain))
             user.save()
 
-
-
-
 class UserBet(TimeStampedModel):
-    """Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
+    """
+    Relatioship table when a user bet on a bet. Bet bet bet bet bet. Bet is the wrose word in tne english language >:-(
         
     Parameters: choice, amount
     Has timestamp : created_at, updated_at
@@ -135,7 +154,7 @@ class UserBet(TimeStampedModel):
     Relationship to :
         * UserBet.user : the user that bet on the bet
         * UserBet.bet : The bet
-        """
+    """
     #Source : https://docs.djangoproject.com/en/dev/topics/db/models/#extra-fields-on-many-to-many-relationships 'adding fields to many-to-many relationships'
     user = models.ForeignKey(BethovenUser, on_delete=models.CASCADE)
     bet = models.ForeignKey(Bet, on_delete=models.CASCADE)

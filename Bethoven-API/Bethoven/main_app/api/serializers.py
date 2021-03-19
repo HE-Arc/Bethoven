@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 
-##USER SERIALIZERS
+###     USER SERIALIZERS    ###
 class UserRegisterSerializer(serializers.ModelSerializer):
     """Register serializer that helps to register a new user (uses the auth.user model)"""
     class Meta:
@@ -39,7 +39,6 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
         model = BethovenUser
         fields = ['username', 'email', 'password', 'new_password']
 
-
     def update(self, instance, validated_data):
         """ Updating a user requires that the password fits the old one to change the data. """
         if not instance.user.check_password(validated_data["password"]) :
@@ -58,11 +57,15 @@ class BethovenProfileCard(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     class Meta:
         model = BethovenUser
-        fields = ['username', 'coins', 'id'] #might add avatar here if it is added
+        fields = ['username', 'coins', 'id']
+
+
+###     BET SERIALIZERS    ###
+
 class BetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bet
-        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result')
+        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result', 'bet_ratio')
 
 class CreateBetSerializer(serializers.ModelSerializer):
     class Meta:
@@ -91,14 +94,21 @@ class PartialUpdateBetSerializer(serializers.ModelSerializer):
                 instance.save()
                 instance.give()
             return instance
-        
-
 
 class UserBetSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBet
         fields = ('user','amount', 'choice','bet')
+        
 class GambleUserBetSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBet
         fields = ('amount', 'choice')
+        
+ ###     FEED SERIALIZERS    ###
+class TrendingFeedSerializer(serializers.Serializer):
+    """ Verifies the info on a trending request  """
+    number = serializers.IntegerField(min_value=1) #number is required - how much bet is this feed's lenght
+    order = serializers.ChoiceField(choices=[("hot", True), ("trending",False)], required=False, default="trending")
+    betFrom = serializers.PrimaryKeyRelatedField(queryset=Bet.objects.all(), required=False, default=None)
+
