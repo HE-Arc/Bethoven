@@ -68,7 +68,7 @@ const router = new VueRouter({
  */
 function loadSessionFromStorage() {
   if (window.sessionStorage.getItem("token") != null) {
-    Api.setToken(window.sessionStorage.getItem("token"));
+    Api.setToken(window.sessionStorage.getItem("token"),window.sessionStorage.getItem("refresh_token"));
     return true;
   } else {
     return false;

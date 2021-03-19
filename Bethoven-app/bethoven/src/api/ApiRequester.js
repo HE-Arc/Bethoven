@@ -1,5 +1,6 @@
 import store from '@/store';
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import router from '../router';
 // import { ILogin } from "./ILogin";
 // import { IRegister } from './IRegister';
 // import { IToudoumResponse } from './IToudoumResponse';
@@ -17,6 +18,7 @@ class ApiRequester {
     static singleton;
     instanceAxios;
     token;
+    refresh_token;
     URL = "http://localhost:8000/";
     client_id = "dhVqxxKFZYhvItVvOOU2KtD6EnKJYERcjcvdq8Kh";
     client_secret = "VaBmlKbzvDtVwDkyzUzcQa6nMU8osXQnLg1D21B859TR2IronyqWGRRPtjUouhSywKx3lEsDD5f33bYr2p9rbKrCesws3G0kHm3oEl02VtWSMyS2uPqZ1x7cGB7CjMit";
@@ -63,9 +65,11 @@ class ApiRequester {
      * Set properties token in instance of APIrequester and vuex store
      * @param {*} token 
      */
-    setToken(token) {
+    setToken(token, refreshToken) {
         this.token = token;
-        store.dispatch('logUser', this.token);
+        this.refresh_token = refreshToken;
+        store.dispatch('logUser', this.token, this.refresh_token);
+        this.refresh_token = refreshToken;
     }
 
     /**
@@ -97,29 +101,30 @@ class ApiRequester {
             console.log(response.data);
 
             this.token = response.data.access_token;
+            this.refresh_token = response.data.refresh_token;
 
             // Store user in Vuex store and sessionStorage
-            store.dispatch('logUser', this.token);
+            store.dispatch('logUser', this.token, this.refresh_token);
             window.sessionStorage.setItem("user", credentials.username);
             window.sessionStorage.setItem("token", this.token);
+            window.sessionStorage.setItem("refresh_token", this.refresh_token);
             return response.data;
+
         } catch (error) {
             const data = error.response.data;
-            if (data.data == undefined) {
-                //throw new ToudoumError(data.code, data.message, data.status);
-            } else {
-                //throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            }
         }
     }
 
+    /**
+     * Delete token from properties, sessions and store vuex
+     */
     async logout() {
         store.dispatch('logout');
         window.sessionStorage.removeItem("user");
         window.sessionStorage.removeItem("token");
-        // const response = await this.get("logout");
+        window.sessionStorage.removeItem("refresh_token");
         this.token = null;
-        // return response;
+        this.refresh_token = null;
     }
 
     /**
@@ -166,19 +171,7 @@ class ApiRequester {
      * @return {*}  {Promise<T>} Promise of type T
      */
     async get(url) {
-        try {
-            const response = await this.instanceAxios.get(url, {
-                headers: { Authorization: `Bearer ${this.token}` }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response.data;
-            // if (data.data == undefined) {
-            //     throw new ToudoumError(data.code, data.message, data.status);
-            // } else {
-            //     throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            // }
-        }
+        return this.request("GET", url);
     }
 
     /**
@@ -191,13 +184,11 @@ class ApiRequester {
      * @return {*}  {Promise<IToudoumResponse>} Api Response
      */
     async request(method, url, body = null) {
-
         const requestConfig = {
             method: method,
             url: url,
             headers: { Authorization: `Bearer ${this.token}`, }
         };
-
 
         if (body != null) {
             requestConfig.data = body;
@@ -207,16 +198,50 @@ class ApiRequester {
             const response = await this.instanceAxios(requestConfig);
             return response.data;
         } catch (error) {
-            throw error.response.data;
-            // if (data.data == undefined) {
-            //     // throw new ToudoumError(data.code, data.message, data.status);
-            // } else {
-            //     // throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            // }
+            if (error.response.status == 401 && error.response.data.detail == "Authentication credentials were not provided.") {
+                try {
+                    await this.refresh();
+                    requestConfig.headers = { Authorization: `Bearer ${this.token}`, }
+                    const response = await this.instanceAxios(requestConfig);
+                    return response.data;
+                } catch (error) {
+                    console.log(error);
+                    this.logout();
+                    router.push({ name: "Login" });
+                }
+            }
         }
     }
 
+    /**
+     * Refresh token
+     */
+    async refresh() {
+        var bodyFormData = new FormData();
+        bodyFormData.append("grant_type", "refresh_token");
+        bodyFormData.append(
+            "client_id",
+            this.client_id
+        );
+        bodyFormData.append(
+            "client_secret",
+            this.client_secret
+        );
+        bodyFormData.append("refresh_token", this.refresh_token);
 
+        const response = await this.instanceAxios.post("login/token/", bodyFormData);
+
+        console.log(response);
+
+        this.token = response.data.access_token;
+        this.refresh_token = response.data.refresh_token;
+
+        // Store user in Vuex store and sessionStorage
+        store.dispatch('logUser', this.token, this.refresh_token);
+        window.sessionStorage.setItem("token", this.token);
+        window.sessionStorage.setItem("refresh_token", this.refresh_token);
+
+    }
 
     /**
      * POST data to API
@@ -261,33 +286,36 @@ class ApiRequester {
         return this.request("PATCH", url, body);
     }
 
-    async formData(url, body) {
-        const requestConfig = {
-            method: "POST",
-            url: url,
-            headers: {
-                Authorization: `Bearer ${this.token}`,
-                "Content-Type": "multipart/form-data"
-            }
-        };
+
+    //TRY TO USE FOR REFRESH AND LOGIN
+
+    // async formData(url, body) {
+    //     const requestConfig = {
+    //         method: "POST",
+    //         url: url,
+    //         headers: {
+    //             Authorization: `Bearer ${this.token}`,
+    //             "Content-Type": "multipart/form-data"
+    //         }
+    //     };
 
 
-        if (body) {
-            requestConfig.data = body;
-        }
+    //     if (body) {
+    //         requestConfig.data = body;
+    //     }
 
-        try {
-            const response = await this.instanceAxios(requestConfig);
-            return response.data;
-        } catch (error) {
-            throw error.response.data;
-            // if (data.data == undefined) {
-            //     throw new ToudoumError(data.code, data.message, data.status);
-            // } else {
-            //     throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            // }
-        }
-    }
+    //     try {
+    //         const response = await this.instanceAxios(requestConfig);
+    //         return response.data;
+    //     } catch (error) {
+    //         throw error.response.data;
+    //         // if (data.data == undefined) {
+    //         //     throw new ToudoumError(data.code, data.message, data.status);
+    //         // } else {
+    //         //     throw new ToudoumError422(data.code, data.message, data.status, data.data);
+    //         // }
+    //     }
+    // }
 
 }
 
