@@ -206,12 +206,6 @@ class BetViewSet(ViewsetFunctionPermissions):
         response = {'message': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
-    def list(self, request):
-        serializer = TrendingFeedSerializer(data = request.query_params)
-        if serializer.is_valid(raise_exception = True):
-            hot = serializer.data["order"]
-            bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], hot)
-            return Response(BetSerializer(bets, many=True).data)
     def partial_update(self,request,pk):
 
         serializer = PartialUpdateBetSerializer(self.get_object(), data = request.data)
@@ -219,7 +213,17 @@ class BetViewSet(ViewsetFunctionPermissions):
         if serializer.is_valid(raise_exception = True):
             serializer.save()
             return Response({"message": "Bet updated succesfully",})  
-          
+
+
+    def get_permissions(self):
+        """Function that allow for defining permissions by function"""
+        try:
+            # return permission_classes depending on `action` 
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError: 
+            # action is not set return default permission_classes
+            return [permission() for permission in self.permission_classes]
+
     @action( detail = True, methods=['post'])
     def gamble(self,request,pk):
         serializer = GambleUserBetSerializer(data = request.data)
@@ -246,7 +250,9 @@ class BetViewSet(ViewsetFunctionPermissions):
             userBet.save()
             user.coins -= amount
             user.save()
+            bet.save()
             return Response({
                 "Your bet" : UserBetSerializer(userBet).data,
                 "message": "Bet Successfully."
             })
+           
