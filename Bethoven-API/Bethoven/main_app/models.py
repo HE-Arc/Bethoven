@@ -124,6 +124,14 @@ class Bet(TimeStampedModel):
         if id is not None :
             bets = bets.filter(id__lt=id)
         return bets[:number]
+
+    @classmethod
+    def friend_bets(cls, user, id, number):
+        """ Return the "home" feed of a user : the bets from his friends"""
+        betsFriendsOwn = Bet.objects.filter(owner__in=user.following).order_by('-pk')
+        betsFriendsParticipate = [userbet.bet for userbet in UserBet.objects.filter(user__in=user.following).order_by('-pk')]
+        allBets = betsFriendsOwn.union(betsFriendsParticipate).order_by('-pk').filter(id__lt=id)
+        return allBets[:number]
       
     def give(self):
         """Give to winners the amount """
