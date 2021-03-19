@@ -227,6 +227,7 @@ class BetViewSet(ViewsetFunctionPermissions):
             bets = Bet.friend_bets(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
             return Response(BetSerializer(bets, many=True).data)
 
+    def partial_update(self,request,pk):
     @action(detail = False)
     def mybet(self, request):
         """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
@@ -242,7 +243,17 @@ class BetViewSet(ViewsetFunctionPermissions):
         if serializer.is_valid(raise_exception = True):
             serializer.save()
             return Response({"message": "Bet updated succesfully",})  
-          
+
+
+    def get_permissions(self):
+        """Function that allow for defining permissions by function"""
+        try:
+            # return permission_classes depending on `action` 
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError: 
+            # action is not set return default permission_classes
+            return [permission() for permission in self.permission_classes]
+
     @action( detail = True, methods=['post'])
     def gamble(self,request,pk):
         serializer = GambleUserBetSerializer(data = request.data)
@@ -269,7 +280,9 @@ class BetViewSet(ViewsetFunctionPermissions):
             userBet.save()
             user.coins -= amount
             user.save()
+            bet.save()
             return Response({
                 "Your bet" : UserBetSerializer(userBet).data,
                 "message": "Bet Successfully."
             })
+           
