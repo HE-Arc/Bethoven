@@ -4,7 +4,7 @@
     color="primary"
     fixed
   >
-    <v-btn>
+    <v-btn to="/testcard">
       <span>Trending</span>
       <v-icon>mdi-trending-up</v-icon>
     </v-btn>
