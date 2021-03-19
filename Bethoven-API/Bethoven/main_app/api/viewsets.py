@@ -227,7 +227,6 @@ class BetViewSet(ViewsetFunctionPermissions):
             bets = Bet.friend_bets(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
             return Response(BetSerializer(bets, many=True).data)
 
-    def partial_update(self,request,pk):
     @action(detail = False)
     def mybet(self, request):
         """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
