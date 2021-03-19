@@ -183,7 +183,9 @@ class BetViewSet(ViewsetFunctionPermissions):
                                     'create': [IsAuthenticated], #Must be registered to create a bet
                                     'partial_update': [isBetOwner], #allow th bet owner to close or reveal
                                     'destroy' : [isBetOwner], #allow th bet owner to delete the bet,
-                                    'gamble' : [IsAuthenticated]
+                                    'gamble' : [IsAuthenticated], #Must be authenticated to gamble (coins from account)
+                                    'home' : [IsAuthenticated], #Must be authenticated to retrieve friend bets.
+                                    'mybet' : [IsAuthenticated] #bet by user - must be authenticated
                                 }
 
     def create(self,request):
@@ -206,8 +208,36 @@ class BetViewSet(ViewsetFunctionPermissions):
         response = {'message': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
-    def partial_update(self,request,pk):
 
+    ### FEEDS From bet ###
+
+    def list(self, request):
+        """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
+        serializer = FeedSerializer(data = request.query_params)
+        if serializer.is_valid(raise_exception = True):
+            trending = serializer.data["order"]
+            bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], trending)
+            return Response(BetSerializer(bets, many=True).data)
+
+    @action(detail = False)
+    def home(self, request):
+        """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
+        serializer = FeedSerializer(data = request.query_params)
+        if serializer.is_valid(raise_exception = True):
+            bets = Bet.friend_bets(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
+            return Response(BetSerializer(bets, many=True).data)
+
+    def partial_update(self,request,pk):
+    @action(detail = False)
+    def mybet(self, request):
+        """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
+        serializer = FeedSerializer(data = request.query_params)
+        if serializer.is_valid(raise_exception = True):
+            bets = Bet.betByUser(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
+            return Response(BetSerializer(bets, many=True).data)
+
+    def partial_update(self,request,pk):
+        """ Close/reveal done through patch in the serializer 'update' method"""
         serializer = PartialUpdateBetSerializer(self.get_object(), data = request.data)
 
         if serializer.is_valid(raise_exception = True):
