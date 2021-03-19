@@ -206,14 +206,22 @@ class BetViewSet(ViewsetFunctionPermissions):
         response = {'message': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
+
+    ### FEEDS From bet ###
+
     def list(self, request):
+        """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
         serializer = TrendingFeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
             hot = serializer.data["order"]
             bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], hot)
             return Response(BetSerializer(bets, many=True).data)
-    def partial_update(self,request,pk):
 
+        
+
+
+    def partial_update(self,request,pk):
+        """ Close/reveal done through patch in the serializer 'update' method"""
         serializer = PartialUpdateBetSerializer(self.get_object(), data = request.data)
 
         if serializer.is_valid(raise_exception = True):
