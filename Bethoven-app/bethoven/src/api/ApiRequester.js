@@ -115,7 +115,7 @@ class ApiRequester {
     /**
      * Update user in session and store vuex
      */
-    async updateUserInformations(){
+    async updateUserInformations() {
         this.user = await this.get("users/me/");
         store.dispatch('updateUser', this.user);
         window.sessionStorage.setItem("user", JSON.stringify(this.user));

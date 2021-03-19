@@ -59,8 +59,6 @@ export default Vue.extend({
   methods: {
     logout: async function () {
       await Api.logout();
-      // this.$store.dispatch('logout');
-      // this.$router.push({ name: "/" });
     },
   },
 });
