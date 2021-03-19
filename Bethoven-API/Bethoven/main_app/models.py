@@ -96,6 +96,9 @@ class Bet(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+    def __hash__(self):
+        return self.id
     
     def refund(self):
         """Refund every user that has bet on this bet of their gambled amount"""
@@ -126,12 +129,18 @@ class Bet(TimeStampedModel):
         return bets[:number]
 
     @classmethod
-    def friend_bets(cls, user, id, number):
+    def friend_bets(cls, number, id, user):
         """ Return the "home" feed of a user : the bets from his friends"""
-        betsFriendsOwn = Bet.objects.filter(owner__in=user.following).order_by('-pk')
-        betsFriendsParticipate = [userbet.bet for userbet in UserBet.objects.filter(user__in=user.following).order_by('-pk')]
-        allBets = betsFriendsOwn.union(betsFriendsParticipate).order_by('-pk').filter(id__lt=id)
-        return allBets[:number]
+        follows = user.following.all()
+
+        betsFriendsOwn = Bet.objects.filter(owner__in=follows).order_by('-pk')
+        betsFriendsParticipate = UserBet.objects.filter(user__in=follows).order_by('-pk')
+
+        if id is not None :
+            betsFriendsOwn = betsFriendsOwn.filter(id__lt=id)
+            betsFriendsParticipate = betsFriendsParticipate.filter(bet__lt=id)
+        allBets = list(set(list(betsFriendsOwn) + [userbet.bet for userbet in betsFriendsParticipate]))
+        return allBets[-number:]
       
     def give(self):
         """Give to winners the amount """
