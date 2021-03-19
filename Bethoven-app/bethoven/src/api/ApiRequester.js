@@ -1,11 +1,6 @@
 import store from '@/store';
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import router from '../router';
-// import { ILogin } from "./ILogin";
-// import { IRegister } from './IRegister';
-// import { IToudoumResponse } from './IToudoumResponse';
-// import { ToudoumError } from './ToudoumError';
-// import { ToudoumError422 } from './ToudoumError422';
 
 /**
  * API Service to link Front-End and Back-End
@@ -17,6 +12,7 @@ class ApiRequester {
     // Properties
     static singleton;
     instanceAxios;
+    user;
     token;
     refresh_token;
     URL = "http://localhost:8000/";
@@ -28,6 +24,7 @@ class ApiRequester {
      * Creates an instance of ApiRequester.
      */
     constructor() {
+        this.user = {};
         this.token = null;
         this.instanceAxios = Axios.create({
             baseURL: `${this.URL}api/`,
@@ -65,11 +62,12 @@ class ApiRequester {
      * Set properties token in instance of APIrequester and vuex store
      * @param {*} token 
      */
-    setToken(token, refreshToken) {
+    updateStore(user, token, refreshToken) {
+        this.user = user;
         this.token = token;
         this.refresh_token = refreshToken;
         store.dispatch('logUser', this.token, this.refresh_token);
-        this.refresh_token = refreshToken;
+        store.dispatch('updateUser', this.user);
     }
 
     /**
@@ -98,21 +96,29 @@ class ApiRequester {
             console.log(bodyFormData);
 
             const response = await this.instanceAxios.post("login/token/", bodyFormData);
-            console.log(response.data);
 
             this.token = response.data.access_token;
             this.refresh_token = response.data.refresh_token;
+            await this.updateUserInformations();
 
             // Store user in Vuex store and sessionStorage
             store.dispatch('logUser', this.token, this.refresh_token);
-            window.sessionStorage.setItem("user", credentials.username);
             window.sessionStorage.setItem("token", this.token);
             window.sessionStorage.setItem("refresh_token", this.refresh_token);
             return response.data;
 
         } catch (error) {
-            const data = error.response.data;
+            throw error.response.data;
         }
+    }
+
+    /**
+     * Update user in session and store vuex
+     */
+    async updateUserInformations() {
+        this.user = await this.get("users/me/");
+        store.dispatch('updateUser', this.user);
+        window.sessionStorage.setItem("user", JSON.stringify(this.user));
     }
 
     /**

@@ -10,7 +10,7 @@
       </v-btn>
 
       <v-btn v-if="logged" icon>
-        <span> 25 </span>
+        <span> {{ userCoins }} </span>
         <v-icon>mdi-alpha-b-circle</v-icon>
       </v-btn>
 
@@ -52,12 +52,13 @@ export default Vue.extend({
     logged() {
       return this.$store.state.isUserLogged;
     },
+    userCoins() {
+      return this.$store.state.user.coins;
+    },
   },
   methods: {
     logout: async function () {
       await Api.logout();
-      // this.$store.dispatch('logout');
-      // this.$router.push({ name: "/" });
     },
   },
 });
