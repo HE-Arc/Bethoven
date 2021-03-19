@@ -101,10 +101,26 @@ class Bet(TimeStampedModel):
             userBet.user.coins += userBet.amount
             userBet.user.save()
 
+    def bet_ratio(self):
+        """Return the ratio choice0 / choice1 of this bet"""
+        choiceCount = dict()
+        total=0
+        for userBet in UserBet.objects.filter(bet=self):
+            total+=1
+            try:
+                choiceCount[userBet.choice]+=1
+            except KeyError :
+                choiceCount[userBet.choice]=1
+        return {k : int(100*round(v/total,2)) for k,v in choiceCount.items()}
+
     @classmethod
-    def trending_bets_from_id(cls, id, number, hot=False):
+    def trending_bets_from_id(cls, number, id, hot=False):
+        """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
         orderBy = "created_at" if hot else "updated_at"
-        return Bet.objects.order_by(orderBy).filter(id__gt=id)[:number]
+        bets = Bet.objects.filter(isClosed=False).order_by('-pk', orderBy)
+        if id is not None :
+            bets = bets.filter(id__lt=id)
+        return bets[:number]
 
 class UserBet(TimeStampedModel):
     """
