@@ -206,7 +206,8 @@ class BetViewSet(ViewsetFunctionPermissions):
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
     def list(self, request):
-        id = int(request.GET["id"])
-        number = int(request.GET["number"])
-        bets = Bet.trending_bets_from_id(id, number)
-        return Response(BetSerializer(bets, many=True).data)
+        serializer = TrendingFeedSerializer(data = request.query_params)
+        if serializer.is_valid(raise_exception = True):
+            hot = serializer.data["order"]
+            bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], hot)
+            return Response(BetSerializer(bets, many=True).data)
