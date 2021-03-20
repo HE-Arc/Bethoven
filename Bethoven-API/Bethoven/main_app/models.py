@@ -109,7 +109,7 @@ class Bet(TimeStampedModel):
 
     def bet_ratio(self):
         """Return the ratio choice0 / choice1 of this bet"""
-        choiceCount = dict()
+        choiceCount = { 0 : 0, 1 : 0 }
         total=0
         for userBet in UserBet.objects.filter(bet=self):
             total+=1
@@ -117,7 +117,14 @@ class Bet(TimeStampedModel):
                 choiceCount[userBet.choice]+=1
             except KeyError :
                 choiceCount[userBet.choice]=1
-        return {k : int(100*round(v/total,2)) for k,v in choiceCount.items()}
+        return {
+            "total" : total,
+            "ratio" : {k : self.get_ratio(v, total) for k,v in choiceCount.items()}
+        }
+
+    def get_ratio(self, value, total) :
+        if total == 0 : return 0 #avoid /0
+        return int(100*round(value/total,2))
 
     @classmethod
     def trending_bets_from_id(cls, number, id, trending=True):
