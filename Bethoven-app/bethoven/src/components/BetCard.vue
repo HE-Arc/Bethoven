@@ -2,8 +2,23 @@
 <template>
   <div>
     <v-card>
-        <v-card-title>{{title}}</v-card-title>
-        <h3>{{description}}</h3>
+      <!-- Title and text -->
+      <v-card-title>{{ bet.title }}</v-card-title>
+      <v-card-text>{{ bet.description }}</v-card-text>
+
+      <!-- 'bet' part with choices and bet buttons -->
+      <v-row no-gutters>
+        <v-col>
+          <v-card class="pa-2" outlined tile> 
+            One 
+          </v-card>
+        </v-col>
+        <v-col>
+          <v-card class="pa-2" outlined tile> 
+            Two 
+          </v-card>
+        </v-col>
+      </v-row>
     </v-card>
   </div>
 </template>
@@ -16,13 +31,14 @@ import Api from "@/api/ApiRequester";
 
 export default Vue.extend({
   name: "BetCard",
-  props : {
-    title : "",
-    description : "",
+  props: {
+    bet: {},
   },
-  computed: {
-  },
+  computed: {},
   methods: {
+    getID() {
+      return this.bet.id;
+    },
   },
 });
-</script>
+</script> 
