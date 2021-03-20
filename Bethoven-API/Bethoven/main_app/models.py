@@ -100,7 +100,7 @@ class Bet(TimeStampedModel):
     def __hash__(self):
         return self.id
     
-    def refund(self):
+    def refund(self): 
         """Refund every user that has bet on this bet of their gambled amount"""
         userBets = UserBet.objects.filter(bet=self)
         for userBet in userBets:
@@ -110,14 +110,16 @@ class Bet(TimeStampedModel):
     def bet_ratio(self):
         """Return the ratio choice0 / choice1 of this bet"""
         choiceCount = { 0 : 0, 1 : 0 }
-        total=0
+        total = number = 0
         for userBet in UserBet.objects.filter(bet=self):
-            total+=1
+            number += 1
+            total += userBet.amount
             try:
-                choiceCount[userBet.choice]+=1
+                choiceCount[userBet.choice] += userBet.amount
             except KeyError :
-                choiceCount[userBet.choice]=1
+                choiceCount[userBet.choice] = userBet.amount
         return {
+            "number" : number,
             "total" : total,
             "ratio" : {k : self.get_ratio(v, total) for k,v in choiceCount.items()}
         }
