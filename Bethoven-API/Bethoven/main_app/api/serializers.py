@@ -63,9 +63,25 @@ class BethovenProfileCard(serializers.ModelSerializer):
 ###     BET SERIALIZERS    ###
 
 class BetSerializer(serializers.ModelSerializer):
+    currentUserBet = serializers.SerializerMethodField()
     class Meta:
         model = Bet
-        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result', 'bet_ratio')
+        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result', 'bet_ratio', 'currentUserBet')
+
+    def get_currentUserBet(self, obj):
+        try:
+            currentUser = self.context['request'].user.bethovenUser
+        except Exception:
+            return None
+
+        try:
+            userbet = UserBet.objects.get(user=currentUser, bet=obj)
+            return {
+                "amount" : userbet.amount, 
+                "choice" : userbet.choice,
+            }
+        except Exception:
+            return None
 
 class CreateBetSerializer(serializers.ModelSerializer):
     class Meta:
