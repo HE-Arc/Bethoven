@@ -1,11 +1,13 @@
 <template>
   <v-container fill-height fluid>
     <v-row justify="center" class="overflow-y-auto">
-      <div v-if="hasBets">
-        <div v-for="bet in bets" :key="bet.title">
-          <bet-card :bet="bet"></bet-card>
+      <v-col v-for="n in columnNumber" :key="n">
+        <div v-if="hasBets">
+          <div v-for="bet in betForColumn(n, columnNumber)" :key="bet.title">
+            <bet-card :bet="bet" :detail="true"></bet-card>
+          </div>
         </div>
-      </div>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -26,9 +28,21 @@ export default {
       startingbets: "10",
     };
   },
+  methods: {
+    betForColumn(n, columns){
+      let list = [];
+      for (let i = n-1; i < this.bets.length; i+=columns) {
+          list.push(this.bets[i]);
+      }
+      return list;
+    }
+  },
   computed: {
     data() {
       return this.bets;
+    },
+    columnNumber(){
+      return this.$vuetify.breakpoint.lgAndUp ? 3 : this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
     },
     hasBets() {
       return this.bets != null && this.bets.length > 0;
