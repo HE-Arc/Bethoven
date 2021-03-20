@@ -9,13 +9,22 @@
       <!-- 'bet' part with choices and bet buttons -->
       <v-row no-gutters>
         <v-col>
-          <v-card class="pa-2" outlined tile> 
-            One 
+          <!--Choice 1-->
+          <v-card  outlined tile>
+            <v-col class="text-right" >
+              <v-card-subtitle class="pa-1">{{ bet.choice1 }}</v-card-subtitle>
+              <v-card-subtitle class="pa-1">{{ bet.bet_ratio[0] }} %</v-card-subtitle>
+
+            </v-col>
           </v-card>
         </v-col>
         <v-col>
-          <v-card class="pa-2" outlined tile> 
-            Two 
+          <!--Choice 2-->
+          <v-card outlined tile>
+            <v-col class="text-left">
+              <v-card-subtitle class="pa-1">{{ bet.choice2 }}</v-card-subtitle>
+              <v-card-subtitle class="pa-1">{{ bet.bet_ratio[1] }} %</v-card-subtitle>
+            </v-col>
           </v-card>
         </v-col>
       </v-row>
