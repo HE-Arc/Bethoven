@@ -3,6 +3,7 @@
     :value="value"
     color="primary"
     fixed
+    app
   >
     <v-btn to="/testcard">
       <span>Trending</span>
