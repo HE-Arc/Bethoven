@@ -1,11 +1,12 @@
 <template>
   <v-container fill-height fluid>
-    <div v-if="hasBets">
-      <div v-for="bet in bets" :key="bet.title">
-        <h1>{{ bet.title }}</h1>
-        <bet-card :title="bet.title" :description="bet.description"></bet-card>
+    <v-row justify="center" class="overflow-y-auto">
+      <div v-if="hasBets">
+        <div v-for="bet in bets" :key="bet.title">
+          <bet-card :bet="bet"></bet-card>
+        </div>
       </div>
-    </div>
+    </v-row>
   </v-container>
 </template>
 
@@ -17,27 +18,26 @@ export default {
   components: { BetCard },
   name: "TestCard",
   async beforeMount() {
-    this.bets = await Api.get("bets/?number=3&");
+    this.bets = await Api.get("bets/?number=" + this.startingbets);
   },
   data() {
     return {
       bets: [],
+      startingbets: "10",
     };
   },
   computed: {
-    data(){
+    data() {
       return this.bets;
     },
     hasBets() {
       return this.bets != null && this.bets.length > 0;
     },
-    lastID(){
+    lastID() {
       return bets[bets.length - 1].id;
-    }
+    },
   },
 };
-
-
 </script>
 
 <style>
