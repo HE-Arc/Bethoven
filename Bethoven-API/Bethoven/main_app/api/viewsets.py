@@ -272,6 +272,9 @@ class BetViewSet(ViewsetFunctionPermissions):
             amount = request.data['amount']
             choice = request.data['choice']
 
+            if amount <= 0 :
+                return Response({"message" : 'You have to bet at least 1 betcoin !'})
+
             if user.coins < amount :
                 return Response({"message" : 'You are ruined !'})
 
