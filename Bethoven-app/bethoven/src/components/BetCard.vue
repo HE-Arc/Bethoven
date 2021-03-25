@@ -1,11 +1,11 @@
 <!-- TEMPLATE -->
 <template>
   <div>
-    <v-card class="ma-1 pt-2">
+    <v-card class="ma-2 pt-1">
       <!-- Title and text -->
       <v-card-title
         >{{ currentBet.title }}
-        <v-chip v-if="!currentBet.isClosed" class="ma-2">
+        <v-chip v-if="currentBet.isClosed" class="ma-2">
           Closed
         </v-chip></v-card-title
       >
@@ -13,20 +13,21 @@
       <v-card-text>{{ currentBet.description }}</v-card-text>
 
       <!-- 'bet' part with choices and bet buttons -->
-      <v-card-subtitle class="pa-0 text-center">
-        votes : {{ currentBet.bet_ratio.number }} <v-icon>mdi-account</v-icon>
-      </v-card-subtitle>
-      <v-card-subtitle class="pa-0 text-center">
-        amount : {{ currentBet.bet_ratio.total }}
-        <v-icon>mdi-alpha-b-circle-outline</v-icon>
-      </v-card-subtitle>
+      <v-row class="align-left mx-1">
+        <v-card-subtitle >
+          votes : {{ currentBet.bet_ratio.number }} <v-icon>mdi-account</v-icon>
+        </v-card-subtitle>
+        <v-card-subtitle >
+          amount : {{ currentBet.bet_ratio.total }}
+          <v-icon>mdi-alpha-b-circle-outline</v-icon>
+        </v-card-subtitle>
+      </v-row>
 
       <!-- If the user has already bet : Display the bet -->
-      <v-row v-if="!canBet">
+      <v-row v-if="hasAlreadyBet">
         <v-col align="center">
-          <v-card-subtitle class="pa-0 text-center">
-            Your bet :
-            {{ userBet.amount }}
+          <v-card-subtitle class="pa-0 float-right">
+            Bet : {{ userBet.amount }}
             <v-icon :class="currentBetColor">mdi-alpha-b-circle-outline</v-icon>
           </v-card-subtitle>
         </v-col>
@@ -130,19 +131,18 @@ export default Vue.extend({
       return this.currentBet.bet_ratio.number > 0;
     },
     canBet() {
-      return (
-        this.currentBet.currentUserBet == null && !this.currentBet.isclosed
-      );
+      //can bet if user hasn't already bet and the bet is not closed
+      return this.userBet == null && !this.currentBet.isClosed;
     },
-    userBet() {
+    hasAlreadyBet(){
+      return this.userBet != null;
+    },
+    //named lambda functon to be retrieved from other computed functions
+    userBet : function() {
       return this.currentBet.currentUserBet;
     },
     currentBetColor() {
-      console.log(
-        this.currentBet.currentUserBet.choice == 0
-          ? "color:teamA"
-          : "color:teamB"
-      );
+      if (this.userBet == null) return;
       return this.currentBet.currentUserBet.choice == 0
         ? "teamA--text"
         : "teamB--text";
@@ -159,7 +159,7 @@ export default Vue.extend({
         return;
       }
 
-      //fetch choice and anount as integer
+      //fetch choice and amount as integer
       let choiceInteger = parseInt(choice);
       let amount = parseInt(choice == 0 ? this.amount0 : this.amount1);
 
@@ -169,7 +169,6 @@ export default Vue.extend({
         amount: amount,
       });
 
-      
       //update bet
       this.currentBet = await Api.get("bets/" + this.bet.id + "/");
       //update user
