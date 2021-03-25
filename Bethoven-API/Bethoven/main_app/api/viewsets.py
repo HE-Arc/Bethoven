@@ -89,7 +89,7 @@ class UserViewSet(ViewsetFunctionPermissions):
         #from user model : fetch profile, followed profile and last bets
         userProfileSerializer = BethovenProfileCard(user)
         followersProfilesSerializers = BethovenProfileCard(user.following, many=True)   #uses serializers with many=true to get
-        lastBetsSerializer = BetSerializer(user.last_bets(5), many=True)                #a standardized list of profiles and bets
+        lastBetsSerializer = BetSerializer(user.last_bets(5), context={'request': request}, many=True)                #a standardized list of profiles and bets
         return Response({
             "user" : userProfileSerializer.data,
             "follows" : followersProfilesSerializers.data,
@@ -169,7 +169,7 @@ class UserViewSet(ViewsetFunctionPermissions):
                 return Response({"message": "'coins' parameters only take asc or desc values"}, status=status.HTTP_400_BAD_REQUEST)
             ordering = f"-coins" if ordering=="desc" else "coins"
         #Make the request, using a regex to find all user with the parameter as a part of their username
-        users = BethovenUser.objects.filter(user__username__regex=fr"(?i).*{username}.*").order_by(ordering)
+        users = BethovenUser.objects.filter(user__username__icontains=username).order_by(ordering)
         serializer = BethovenProfileCard(users, many=True) #build a list of profile cards
         return Response(serializer.data)
 
@@ -195,7 +195,7 @@ class BetViewSet(ViewsetFunctionPermissions):
             bet.owner = request.user.bethovenUser
             bet.save()
             return Response({
-                "Bet" : BetSerializer(bet).data,
+                "Bet" : BetSerializer(bet, context={'request': request}).data,
                 "message": "Bet Created Successfully."
             })
 
@@ -210,14 +210,13 @@ class BetViewSet(ViewsetFunctionPermissions):
 
 
     ### FEEDS From bet ###
-
     def list(self, request):
         """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
         serializer = FeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
             trending = serializer.data["order"]
             bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], trending)
-            return Response(BetSerializer(bets, many=True).data)
+            return Response(BetSerializer(bets, context={'request': request}, many=True).data)
 
     @action(detail = False)
     def home(self, request):
@@ -225,16 +224,15 @@ class BetViewSet(ViewsetFunctionPermissions):
         serializer = FeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
             bets = Bet.friend_bets(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
-            return Response(BetSerializer(bets, many=True).data)
+            return Response(BetSerializer(bets, context={'request': request}, many=True).data)
 
-    def partial_update(self,request,pk):
     @action(detail = False)
     def mybet(self, request):
         """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
         serializer = FeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
             bets = Bet.betByUser(serializer.data["number"], serializer.data["betFrom"], request.user.bethovenUser)
-            return Response(BetSerializer(bets, many=True).data)
+            return Response(BetSerializer(bets, context={'request': request}, many=True).data)
 
     def partial_update(self,request,pk):
         """ Close/reveal done through patch in the serializer 'update' method"""

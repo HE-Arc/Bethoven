@@ -17,11 +17,7 @@ import Api from "@/api/ApiRequester";
 export default Vue.extend({
   name: "Home",
   async beforeMount () {
-    this.response = await Api.get("bet/");
-    // await Api.post("bet/",{"title":"bet04",
-    // "description":"bla",
-    // "choice1":"Oui",
-    // "choice2":"Non"});
+    this.response = await Api.get("bets/?number=5");
   },
   data() {
       return {

@@ -83,8 +83,8 @@ class Bet(TimeStampedModel):
     #Bet gestion
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
-    choice1 = models.CharField(max_length=50)    
-    choice2 = models.CharField(max_length=50)
+    choice0 = models.CharField(max_length=50)
+    choice1 = models.CharField(max_length=50)
     #Closure gestion
     isClosed = models.BooleanField(default=False)
     result = models.IntegerField(blank=True, null=True)
@@ -100,7 +100,7 @@ class Bet(TimeStampedModel):
     def __hash__(self):
         return self.id
     
-    def refund(self):
+    def refund(self): 
         """Refund every user that has bet on this bet of their gambled amount"""
         userBets = UserBet.objects.filter(bet=self)
         for userBet in userBets:
@@ -109,21 +109,30 @@ class Bet(TimeStampedModel):
 
     def bet_ratio(self):
         """Return the ratio choice0 / choice1 of this bet"""
-        choiceCount = dict()
-        total=0
+        choiceCount = { 0 : 0, 1 : 0 }
+        total = number = 0
         for userBet in UserBet.objects.filter(bet=self):
-            total+=1
+            number += 1
+            total += userBet.amount
             try:
-                choiceCount[userBet.choice]+=1
+                choiceCount[userBet.choice] += userBet.amount
             except KeyError :
-                choiceCount[userBet.choice]=1
-        return {k : int(100*round(v/total,2)) for k,v in choiceCount.items()}
+                choiceCount[userBet.choice] = userBet.amount
+        return {
+            "number" : number,
+            "total" : total,
+            "ratio" : {k : self.get_ratio(v, total) for k,v in choiceCount.items()}
+        }
+
+    def get_ratio(self, value, total) :
+        if total == 0 : return 0 #avoid /0
+        return int(100*round(value/total,2))
 
     @classmethod
     def trending_bets_from_id(cls, number, id, trending=True):
         """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
         orderBy = "-updated_at" if trending else "-created_at"
-        bets = Bet.objects.filter(isClosed=False).order_by(orderBy)
+        bets = Bet.filter(isClosed=False).objects.order_by(orderBy)
         if id is not None :
             bets = bets.filter(id__lt=id)
         return bets[:number]
