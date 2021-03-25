@@ -83,8 +83,8 @@ class Bet(TimeStampedModel):
     #Bet gestion
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
-    choice1 = models.CharField(max_length=50)    
-    choice2 = models.CharField(max_length=50)
+    choice0 = models.CharField(max_length=50)
+    choice1 = models.CharField(max_length=50)
     #Closure gestion
     isClosed = models.BooleanField(default=False)
     result = models.IntegerField(blank=True, null=True)
@@ -132,7 +132,7 @@ class Bet(TimeStampedModel):
     def trending_bets_from_id(cls, number, id, trending=True):
         """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
         orderBy = "-updated_at" if trending else "-created_at"
-        bets = Bet.objects.filter(isClosed=False).order_by(orderBy)
+        bets = Bet.filter(isClosed=False).objects.order_by(orderBy)
         if id is not None :
             bets = bets.filter(id__lt=id)
         return bets[:number]

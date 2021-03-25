@@ -66,7 +66,7 @@ class BetSerializer(serializers.ModelSerializer):
     currentUserBet = serializers.SerializerMethodField()
     class Meta:
         model = Bet
-        fields = ('id', 'title', 'description', 'choice1', 'choice2', 'isClosed', 'result', 'bet_ratio', 'currentUserBet')
+        fields = ('id', 'title', 'description', 'choice0', 'choice1', 'isClosed', 'result', 'bet_ratio', 'currentUserBet')
 
     def get_currentUserBet(self, obj):
         try:
@@ -86,7 +86,7 @@ class BetSerializer(serializers.ModelSerializer):
 class CreateBetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bet
-        fields = ('title', 'description', 'choice1', 'choice2')
+        fields = ('title', 'description', 'choice0', 'choice1')
 
 class PartialUpdateBetSerializer(serializers.ModelSerializer):
     isClosed = serializers.BooleanField(required=False,default=None)
