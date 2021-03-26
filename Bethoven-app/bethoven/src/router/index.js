@@ -3,7 +3,9 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Register from '../views/Register.vue'
 import Login from '../views/Login.vue'
-import Feed from '../views/Feed.vue'
+import FeedHome from '../views/FeedHome.vue'
+import FeedMybet from '../views/FeedMybet.vue'
+import FeedTrending from '../views/FeedTrending.vue'
 import store from '@/store'
 import Api from "@/api/ApiRequester";
 
@@ -46,9 +48,19 @@ const routes = [
     }
   },
   {
-    path: '/testcard',
-    name: 'Feed',
-    component: Feed,
+    path: '/trending',  
+    name: 'FeedTrending',
+    component: FeedTrending,
+  },
+  {
+    path: '/home',
+    name: 'FeedHome',
+    component: FeedHome,
+  },
+  {
+    path: '/mybet',
+    name: 'FeedMybet',
+    component: FeedMybet,
   },
   {
     path: '/about',
