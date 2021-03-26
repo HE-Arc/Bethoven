@@ -19,6 +19,7 @@ export default {
   name: "Feed",
   async mounted() {
     this.bets = await Api.get(this.query + "/?number=" + this.betSlice);
+    this.bets.forEach(bet => this.currentIDs.push(bet.id));
   },
   data() {
     return {
@@ -57,9 +58,15 @@ export default {
         //end of scrolling - no new bet !
         return;
       }
-      newBet.forEach(bet => );
+
+      //filter to be sure we do not have ID duplicity in the vue
+      let uniqueNewbets = newBet.filter((bet, index, arr) => { 
+          return !this.currentIDs.includes(bet.id);
+      });
+      uniqueNewbets.forEach(bet => this.currentIDs.push(bet.id));
 
       this.bets = this.bets.concat(newBet);
+
     },
     handleScroll() {
       window.onscroll = () => {
