@@ -97,8 +97,14 @@ class Bet(TimeStampedModel):
     def __str__(self):
         return self.title
 
+    def __eq__(self, other):
+        return self.id == other.id
+
     def __hash__(self):
         return self.id
+
+    def __lt__(self, other):
+        return self.id < other.id
     
     def refund(self): 
         """Refund every user that has bet on this bet of their gambled amount"""
@@ -132,39 +138,51 @@ class Bet(TimeStampedModel):
     def trending_bets_from_id(cls, number, id, trending=True):
         """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
         orderBy = "-updated_at" if trending else "-created_at"
-        bets = list(Bet.objects.filter(isClosed=False).order_by(orderBy))
+        bets = Bet.objects.filter(isClosed=False).order_by(orderBy)
 
-        sliceFrom = bets.index(Bet.objects.get(id=id))+1 if id is not None else 0
+        if id is not None :
+            limitBet = Bet.objects.get(id=id)
+            if trending :
+                bets = bets.filter(updated_at__lt=limitBet.updated_at)
+            else :
+                bets = bets.filter(created_at__lt=limitBet.created_at)
 
-        return bets[sliceFrom:sliceFrom+number]
+        return bets[:number]
 
     @classmethod
     def friend_bets(cls, number, id, user):
         """ Return the "home" feed of a user : the bets from his friends"""
         follows = user.following.all()
 
-        betsFriendsOwn = Bet.objects.filter(owner__in=follows).order_by('-pk')
-        betsFriendsParticipate = UserBet.objects.filter(user__in=follows).order_by('-pk')
+        betsFriendsOwn = Bet.objects.filter(owner__in=follows).order_by('-updated_at')
+        betsFriendsParticipate = UserBet.objects.filter(user__in=follows).order_by('-updated_at')
 
         if id is not None :
-            betsFriendsOwn = betsFriendsOwn.filter(id__lt=id)
-            betsFriendsParticipate = betsFriendsParticipate.filter(bet__lt=id)
+            limitBet = Bet.objects.get(id=id)
+            betsFriendsOwn = betsFriendsOwn.filter(updated_at__lt=limitBet.updated_at)
+            betsFriendsParticipate = betsFriendsParticipate.filter(bet__updated_at__lt=limitBet.updated_at)
 
-        allBets = list(set(list(betsFriendsOwn) + [userbet.bet for userbet in betsFriendsParticipate]))
-        return allBets[-number:][::-1]
+        betsFriendsOwn = list(betsFriendsOwn)
+        betsFriendsParticipate = [userbet.bet for userbet in betsFriendsParticipate]
+        allBetsUnique = list(set(betsFriendsOwn + betsFriendsParticipate))
+        allBets = sorted(allBetsUnique, key=lambda x : x.updated_at, reverse=True)
+        return allBets[:number]
       
     @classmethod
     def betByUser(cls, number, id, user):
         """ Return the "mybet" feed, which can have the bets which the user owns or participate in """
-        betsOwned = Bet.objects.filter(owner=user).order_by('-pk')
-        betsParticipating = UserBet.objects.filter(user=user).order_by('-pk')
+        betsOwned = Bet.objects.filter(owner=user).order_by('-id')
+        betsParticipating = UserBet.objects.filter(user=user).order_by('-id')
 
         if id is not None :
             betsOwned = betsOwned.filter(id__lt=id)
             betsParticipating = betsParticipating.filter(bet__lt=id)
             
-        allBets = list(set(list(betsOwned) + [userbet.bet for userbet in betsParticipating]))
-        return allBets[-number:][::-1]
+        betsOwned = list(betsOwned)
+        betsParticipating = [userbet.bet for userbet in betsParticipating]
+        allBetsUnique = list(set(betsOwned + betsParticipating))
+        allBets = sorted(allBetsUnique, key=lambda x : x.id, reverse=True)
+        return allBets[:number]
 
     def give(self):
         """Give to winners the amount """
