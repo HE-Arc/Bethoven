@@ -132,10 +132,11 @@ class Bet(TimeStampedModel):
     def trending_bets_from_id(cls, number, id, trending=True):
         """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
         orderBy = "-updated_at" if trending else "-created_at"
-        bets = Bet.filter(isClosed=False).objects.order_by(orderBy)
-        if id is not None :
-            bets = bets.filter(id__lt=id)
-        return bets[:number]
+        bets = list(Bet.objects.filter(isClosed=False).order_by(orderBy))
+
+        sliceFrom = bets.index(Bet.objects.get(id=id))+1 if id is not None else 0
+
+        return bets[sliceFrom:sliceFrom+number]
 
     @classmethod
     def friend_bets(cls, number, id, user):
@@ -148,6 +149,7 @@ class Bet(TimeStampedModel):
         if id is not None :
             betsFriendsOwn = betsFriendsOwn.filter(id__lt=id)
             betsFriendsParticipate = betsFriendsParticipate.filter(bet__lt=id)
+
         allBets = list(set(list(betsFriendsOwn) + [userbet.bet for userbet in betsFriendsParticipate]))
         return allBets[-number:][::-1]
       
