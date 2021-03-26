@@ -20,6 +20,11 @@
       <v-icon>mdi-alpha-b-circle</v-icon>
     </v-btn>
 
+     <v-btn to="/create">
+      <span>Create bet</span>
+      <v-icon>mdi-plus-box</v-icon>
+    </v-btn>
+
   </v-bottom-navigation>
 </template>
 
