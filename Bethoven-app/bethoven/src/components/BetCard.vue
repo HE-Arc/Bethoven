@@ -44,9 +44,13 @@
         </v-col>
         <!-- If the user has already bet : Display the bet -->
         <v-col v-if="hasAlreadyBet" class="my-2 pa-0 text-right">
-          <v-card-subtitle class="pa-0">
+          <v-card-subtitle class="pa-0 mr-2">
             your bet : {{ userBet.amount }}
             <v-icon :class="currentBetColor">mdi-alpha-b-circle-outline</v-icon>
+          </v-card-subtitle>
+          <v-card-subtitle v-if="hasGain" class="pa-0">
+            your won {{ userBet.gain }}
+            <v-icon>mdi-alpha-b-circle-outline</v-icon>
           </v-card-subtitle>
         </v-col>
       </v-row>
@@ -173,6 +177,9 @@ export default Vue.extend({
     //named lambda functon to be retrieved from other computed functions
     userBet: function () {
       return this.currentBet.currentUserBet;
+    },
+    hasGain(){
+      return this.userBet().gain != null;
     },
     currentBetColor() {
       if (this.userBet == null) return;
