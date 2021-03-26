@@ -66,7 +66,7 @@ class BetSerializer(serializers.ModelSerializer):
     currentUserBet = serializers.SerializerMethodField()
     class Meta:
         model = Bet
-        fields = ('id', 'title', 'description', 'choice0', 'choice1', 'isClosed', 'result', 'bet_ratio', 'currentUserBet')
+        fields = ('id', 'title', 'description', 'choice0', 'choice1', 'isClosed', 'result', 'bet_ratio', 'currentUserBet','owner')
 
     def get_currentUserBet(self, obj):
         try:

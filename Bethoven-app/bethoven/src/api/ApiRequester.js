@@ -16,8 +16,8 @@ class ApiRequester {
     token;
     refresh_token;
     URL = "http://localhost:8000/";
-    client_id = "dhVqxxKFZYhvItVvOOU2KtD6EnKJYERcjcvdq8Kh";
-    client_secret = "VaBmlKbzvDtVwDkyzUzcQa6nMU8osXQnLg1D21B859TR2IronyqWGRRPtjUouhSywKx3lEsDD5f33bYr2p9rbKrCesws3G0kHm3oEl02VtWSMyS2uPqZ1x7cGB7CjMit";
+    client_id = "1";
+    client_secret = "1";
     grant_type = "password";
 
     /**

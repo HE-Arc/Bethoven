@@ -6,6 +6,7 @@ import Login from '../views/Login.vue'
 import TestCard from '../views/TestCard.vue'
 import store from '@/store'
 import Api from "@/api/ApiRequester";
+import BetDetail from '../views/BetDetail.vue'
 
 Vue.use(VueRouter)
 
@@ -49,6 +50,12 @@ const routes = [
     path: '/testcard',
     name: 'Test',
     component: TestCard,
+  },
+  {
+    path: '/bets/:id',
+    name: 'BetDetail',
+    props: true,
+    component: BetDetail,
   },
   {
     path: '/about',
