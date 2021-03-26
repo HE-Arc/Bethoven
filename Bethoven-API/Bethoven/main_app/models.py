@@ -39,24 +39,30 @@ class BethovenUser(TimeStampedModel):
 
     def get_statistics(self):
         """ Return the bet statistics of this user """
+        #init variables
         userBets = UserBet.objects.filter(user=self)
         totalBet = len(userBets)
         results = {0:0, 1:0}
         totalBetAmount = 0
+        totalWinAmount = 0
+        #loop through userbets of the user (fetch once, avoid N+1) to find its bet statistics
         for userBet in userBets:
             totalBetAmount += userBet.amount
-            if userBet.bet.result:
+            if userBet.bet.result is not None :
                 results[1 if userBet.bet.result == userBet.choice else 0]+=1
+                if userBet.gain is not None :
+                    totalWinAmount += userBet.gain
 
         won = results[1]
         lost = results[0]
-        effectiveness = 1.0 if lost==0 else (won-lost)/(won+lost)
+        effectiveness = 1.0 if lost == 0 else (won-lost)/(won+lost)
 
         return {
             "Won": won,
             "Lost": lost,
             "total bet ": totalBet,
             "totalBetAmount": totalBetAmount,
+            "totalWinAmount": totalWinAmount,
             "Effectiveness": effectiveness,
         }
 
@@ -87,7 +93,7 @@ class Bet(TimeStampedModel):
     choice1 = models.CharField(max_length=50)
     #Closure gestion
     isClosed = models.BooleanField(default=False)
-    result = models.IntegerField(blank=True, null=True)
+    result = models.IntegerField(default=None, blank=True, null=True)
     #"Own" relationship with user. Nullable as we dont want the bets to be destroyed on user deletion
     owner = models.ForeignKey(BethovenUser, related_name='BetsOwned', on_delete=models.SET_NULL, null=True)
 
@@ -98,7 +104,7 @@ class Bet(TimeStampedModel):
         return self.title
 
     def __eq__(self, other):
-        return self.id == other.id
+        return isinstance(self, Bet) and isinstance(other, Bet) and self.id == other.id 
 
     def __hash__(self):
         return self.id
@@ -186,21 +192,34 @@ class Bet(TimeStampedModel):
 
     def give(self):
         """Give to winners the amount """
-
+        #init
         userBets = UserBet.objects.filter(bet=self)
-        winner = dict()
+        winners = []
         totalBetAmount = 0
         totalBetWinner = 0
+
+        #go through userbets for this bet
         for userBet in userBets:
+            #keep track of the amount
             totalBetAmount += userBet.amount
+            #winners go into the winner pool
             if userBet.choice == userBet.bet.result:
                 totalBetWinner += userBet.amount
-                winner[userBet.user] = userBet.amount
+                winners.append(userBet)
+            else :
+                #loosers have 0
+                userBet.gain = 0
+                userBet.save()
 
-        for user,amount in winner.items():
-            gain = (amount / totalBetWinner) * totalBetAmount
-            user.coins += int(round(gain))
-            user.save()
+        #go through winners to give them their gain (need totalamount and winner amount)
+        for userBet in winners:
+            gain = (userBet.amount / totalBetWinner) * totalBetAmount
+            #give gain to user
+            userBet.user.coins += int(round(gain))
+            userBet.user.save()
+            #save gain into userbet
+            userBet.gain = gain
+            userBet.save()
 
 class UserBet(TimeStampedModel):
     """
@@ -218,6 +237,7 @@ class UserBet(TimeStampedModel):
     bet = models.ForeignKey(Bet, on_delete=models.CASCADE)
     choice = models.IntegerField()
     amount = models.IntegerField()
+    gain = models.IntegerField(default=None, blank=True, null=True)
 
     def __str__(self):
         return f'{self.user} bet:{self.amount} on {self.choice}'

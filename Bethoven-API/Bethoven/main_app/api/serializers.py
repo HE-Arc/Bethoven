@@ -79,6 +79,7 @@ class BetSerializer(serializers.ModelSerializer):
             return {
                 "amount" : userbet.amount, 
                 "choice" : userbet.choice,
+                "gain" : userbet.gain,
             }
         except Exception:
             return None
@@ -89,14 +90,13 @@ class CreateBetSerializer(serializers.ModelSerializer):
         fields = ('title', 'description', 'choice0', 'choice1')
 
 class PartialUpdateBetSerializer(serializers.ModelSerializer):
-    isClosed = serializers.BooleanField(required=False,default=None)
-    result = serializers.IntegerField(required=False,default=None)
+    isClosed = serializers.BooleanField(required=False, default=None)
+    result = serializers.IntegerField(required=False, default=None)
     class Meta:
         model = Bet
         fields = ('isClosed','result')
     
     def update(self, instance, validated_data):
-
         if validated_data["isClosed"]:
             closed = validated_data["isClosed"]
             if not instance.isClosed and closed :
@@ -105,7 +105,8 @@ class PartialUpdateBetSerializer(serializers.ModelSerializer):
             return instance
         if validated_data["result"]:
             result = validated_data["result"]
-            if((result == 1 or result == 0) and  instance.result is None and instance.isClosed):
+            print(f"Closing with result {result}")
+            if((result == 1 or result == 0) and instance.result is None and instance.isClosed):
                 instance.result = result
                 instance.save()
                 instance.give()
