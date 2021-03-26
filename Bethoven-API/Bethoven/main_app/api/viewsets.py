@@ -286,4 +286,3 @@ class BetViewSet(ViewsetFunctionPermissions):
                 "Your bet" : UserBetSerializer(userBet).data,
                 "message": "Bet Successfully."
             })
-           

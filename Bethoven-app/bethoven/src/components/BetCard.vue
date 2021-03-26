@@ -4,13 +4,13 @@
     <v-card class="ma-2 pt-1">
       <!-- Title and text -->
       <v-row>
-        <v-col cols="8">
+        <v-col>
           <v-card-title class="keep-word"
             >{{ currentBet.title }}
             <v-chip v-if="currentBet.isClosed" class="mx-1"> Closed </v-chip>
           </v-card-title>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="auto" class="px-2 mx-3">
           <!-- "refresh" option -->
           <v-switch v-model="switchMe">
             <template v-slot:label>
