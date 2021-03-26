@@ -1,6 +1,7 @@
 import store from '@/store';
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import router from '../router';
+import config from '../../.env.json';
 
 /**
  * API Service to link Front-End and Back-End
@@ -16,8 +17,8 @@ class ApiRequester {
     token;
     refresh_token;
     URL = "http://localhost:8000/";
-    client_id = "dhVqxxKFZYhvItVvOOU2KtD6EnKJYERcjcvdq8Kh";
-    client_secret = "VaBmlKbzvDtVwDkyzUzcQa6nMU8osXQnLg1D21B859TR2IronyqWGRRPtjUouhSywKx3lEsDD5f33bYr2p9rbKrCesws3G0kHm3oEl02VtWSMyS2uPqZ1x7cGB7CjMit";
+    client_id =  config.client_id;
+    client_secret =  config.client_secret;
     grant_type = "password";
 
     /**
