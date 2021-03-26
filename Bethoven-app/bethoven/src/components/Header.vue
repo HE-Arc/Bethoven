@@ -25,6 +25,9 @@
 
       <v-list v-if="logged">
         <!-- TODO ADD SETTINGS -->
+        <v-list-item v-on:click="MyProfil()">
+          <v-list-item-title>My Profil</v-list-item-title>
+        </v-list-item>
         <v-list-item v-on:click="logout()">
           <v-list-item-title>Logout</v-list-item-title>
         </v-list-item>
@@ -66,6 +69,9 @@ export default Vue.extend({
   methods: {
     logout: async function () {
       await Api.logout();
+    },
+    MyProfil() {
+      this.$router.push({path:"/profil/"+this.$store.state.user.id})
     },
     
   },

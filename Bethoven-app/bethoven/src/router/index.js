@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Register from '../views/Register.vue'
 import Login from '../views/Login.vue'
 import TestCard from '../views/TestCard.vue'
+import Profil from '../views/Profil.vue'
 import store from '@/store'
 import Api from "@/api/ApiRequester";
 
@@ -44,6 +45,12 @@ const routes = [
     meta: {
       onlyUnlogged: true
     }
+  },
+  {
+    path: '/profil/:id',
+    name: 'Profil',
+    props:true,
+    component: Profil,
   },
   {
     path: '/testcard',

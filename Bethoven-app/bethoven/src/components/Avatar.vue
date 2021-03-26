@@ -12,7 +12,6 @@ import Vue from "vue";
 export default Vue.extend({
   props: {
     uname: "",
-    color: 0,
   },
   data() {
     return {
