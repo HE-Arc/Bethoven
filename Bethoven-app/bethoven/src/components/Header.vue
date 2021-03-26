@@ -15,8 +15,11 @@
 
     <v-menu left bottom>
       <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on">
-          <v-icon>mdi-account-circle-outline</v-icon>
+        <v-btn v-if="logged" icon v-bind="attrs" v-on="on">
+          <avatar  :uname="uname"></avatar>
+        </v-btn>
+        <v-btn v-else icon v-bind="attrs" v-on="on">
+          <v-icon >mdi-account-circle-outline</v-icon>
         </v-btn>
       </template>
 
@@ -44,8 +47,11 @@
 import Vue from "vue";
 import Api from "@/api/ApiRequester";
 
+import Avatar from "../components/Avatar.vue";
+
 export default Vue.extend({
   name: "Header",
+  components: { Avatar },
   computed: {
     logged() {
       return this.$store.state.isUserLogged;
@@ -53,11 +59,15 @@ export default Vue.extend({
     userCoins() {
       return this.$store.state.user.coins;
     },
+    uname(){
+      return this.$store.state.user.username;
+    },
   },
   methods: {
     logout: async function () {
       await Api.logout();
     },
+    
   },
 });
 </script>
