@@ -1,19 +1,21 @@
 <template>
-  <v-container fill-height fluid>
-    <v-row align="start" justify="start"> <v-col align="center"> 
-        <avatar v-if="this.user!=null" :uname="this.user.user.username"></avatar>
-        </v-col></v-row
-  ></v-container>
+  <v-container >
+    <profil-card :user="this.user">
+
+
+    </profil-card>
+  </v-container>
 </template>
 
 <script>
 import Vue from "vue";
 import Api from "@/api/ApiRequester";
 import Avatar from "../components/Avatar.vue";
+import ProfilCard from "../components/ProfilCard.vue";
 
 // /api/users/{id}
 export default Vue.extend({
-  components: { Avatar },
+  components: { Avatar, ProfilCard },
   name: "Profil",
   async mounted() {
     this.user = await Api.get("users/"+this.idUserProfil);
