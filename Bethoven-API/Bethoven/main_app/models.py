@@ -145,7 +145,7 @@ class Bet(TimeStampedModel):
         """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
         orderBy = "-updated_at" if trending else "-created_at"
         bets = Bet.objects.filter(isClosed=False).order_by(orderBy)
-
+        
         if id is not None :
             limitBet = Bet.objects.get(id=id)
             if trending :

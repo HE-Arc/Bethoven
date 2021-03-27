@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Register from '../views/Register.vue'
 import Login from '../views/Login.vue'
+import BetCreate from '../views/BetCreate.vue'
 import FeedHome from '../views/FeedHome.vue'
 import FeedMybet from '../views/FeedMybet.vue'
 import FeedTrending from '../views/FeedTrending.vue'
@@ -68,6 +69,11 @@ const routes = [
     name: 'BetDetail',
     props: true,
     component: BetDetail,
+  },
+  {
+    path: '/create',
+    name: 'Create',
+    component: BetCreate,
   },
   {
     path: '/about',
