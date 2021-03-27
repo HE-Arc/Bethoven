@@ -126,5 +126,5 @@ class GambleUserBetSerializer(serializers.ModelSerializer):
 class FeedSerializer(serializers.Serializer):
     """ Verifies the info on a trending request  """
     number = serializers.IntegerField(min_value=1) #number is required - how much bet is this feed's lenght
-    order = serializers.ChoiceField(choices=[("hot", False), ("trending",True)], required=False, default=True)
+    order = serializers.ChoiceField(choices=["trending", "hot"], required=False, default="trending")
     betFrom = serializers.PrimaryKeyRelatedField(queryset=Bet.objects.all(), required=False, default=None)

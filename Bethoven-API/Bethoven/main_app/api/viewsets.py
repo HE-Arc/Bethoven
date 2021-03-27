@@ -216,7 +216,9 @@ class BetViewSet(ViewsetFunctionPermissions):
         """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
         serializer = FeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
-            trending = serializer.data["order"]
+            #only 2 choices : trending of hot
+            ordering = serializer.data["order"]
+            trending = True if ordering == "trending" else False
             bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], trending)
             return Response(BetSerializer(bets, context={'request': request}, many=True).data)
 
