@@ -19,16 +19,16 @@
           <div>Ordering</div>
         </v-layout>
 
-        <v-btn value="asc">
+        <v-btn value="asc" @click="finishedTyping">
           <span class="hidden-sm-and-down">Asc</span>
           <v-icon right>
-            mdi-format-align-left
+            mdi-arrow-up-bold-circle-outline
           </v-icon>
         </v-btn>
-        <v-btn value="desc">
+        <v-btn value="desc" @click="finishedTyping">
           <span class="hidden-sm-and-down">Desc</span>
           <v-icon right>
-            mdi-format-align-right
+            mdi-arrow-down-bold-circle-outline
           </v-icon>
         </v-btn>
       </v-btn-toggle>
