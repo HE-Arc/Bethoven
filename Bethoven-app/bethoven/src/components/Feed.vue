@@ -3,7 +3,7 @@
       <v-col v-for="n in columnNumber" :key="n">
         <div v-if="hasBets">
           <div v-for="bet in betsForColumn(n, columnNumber)" :key="bet.id">
-            <bet-card :bet="bet" :detail="true"></bet-card>
+            <bet-card :bet="bet" :detail="true" :clickable="true" ></bet-card>
           </div>
         </div>
       </v-col>
