@@ -73,7 +73,6 @@ export default {
         },
         sendIndex(){
             if(this.choices.includes(this.selectedChoice())){
-                //console.log(this.choices.findIndex(choice => choice === this.selectedChoice()));
                 return this.choices.findIndex(choice => choice === this.selectedChoice());
             }
         },
