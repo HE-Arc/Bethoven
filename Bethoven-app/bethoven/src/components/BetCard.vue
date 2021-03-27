@@ -153,12 +153,8 @@ export default Vue.extend({
   props: {
     bet: {},
     detail: false,
-<<<<<<< HEAD
     refresh : false,
     clickable : true,
-=======
-    refresh: false,
->>>>>>> 92bdda65b974f7e92c77399f00182880921b9121
   },
   watch: {
     //called whenever switchMe changes
