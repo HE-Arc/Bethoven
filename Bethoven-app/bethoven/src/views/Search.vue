@@ -8,12 +8,16 @@
                 outlined
                 dense
                 append-icon="mdi-magnify"
+                v-model="unameQuery"
+                @keyup="finishedTyping"
             ></v-text-field>
             </v-col>
         </v-row>
         <v-row align="center" justify="center">
             <v-col cols=8>
-                
+                <div v-for="user in users" :key="user.id">
+                    <v-text>{{user}}</v-text>
+                </div>
             </v-col>
         </v-row>
     </v-container>
@@ -26,8 +30,22 @@ export default {
     components : {
         //Feed,
     },
+    data() {
+        return {
+            users : {},
+            unameQuery : "",
+            delayedSearch : {},
+        };
+    },
+    methods: {
+        search(uname){
+            return;
+        },
+        finishedTyping(){
+            
+        },
+    }
 }
-
 </script>
 
 <style>
