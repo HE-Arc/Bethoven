@@ -12,7 +12,27 @@
           v-model="unameQuery"
           @keyup="finishedTyping"
         ></v-text-field>
-        
+
+        <v-btn-toggle borderless v-model="ordering">
+        <v-layout row justify-center align-center class="mr-3">
+          <v-icon>mdi-alpha-b-circle</v-icon>
+          <div>Ordering</div>
+        </v-layout>
+
+        <v-btn value="asc">
+          <span class="hidden-sm-and-down">Asc</span>
+          <v-icon right>
+            mdi-format-align-left
+          </v-icon>
+        </v-btn>
+        <v-btn value="desc">
+          <span class="hidden-sm-and-down">Desc</span>
+          <v-icon right>
+            mdi-format-align-right
+          </v-icon>
+        </v-btn>
+      </v-btn-toggle>
+
       </v-col>
     </v-row>
     <v-row align="center" justify="center">
@@ -40,6 +60,7 @@ export default {
       unameQuery: "",
       delayedSearch: null,
       searchDelayMilliseconds : 150,
+      ordering : "",
     };
   },
   methods: {
@@ -52,7 +73,11 @@ export default {
             return;
         } 
         //call search and update users
-        this.users = await Api.get("users/search/?username=" + this.unameQuery);
+        let orderingQuery = "";
+        if(this.ordering){
+            orderingQuery = "&coins=" + this.ordering;
+        }
+        this.users = await Api.get("users/search/?username=" + this.unameQuery + orderingQuery);
     },
     finishedTyping() {
         if (this.delayedSearch != null) {
