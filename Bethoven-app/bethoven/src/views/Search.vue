@@ -13,7 +13,7 @@
           @keyup="finishedTyping"
         ></v-text-field>
 
-        <v-btn-toggle borderless v-model="ordering">
+        <v-btn-toggle borderless v-model="ordering" class="px-2">
         <v-layout row justify-center align-center class="mr-3">
           <v-icon>mdi-alpha-b-circle</v-icon>
           <div>Ordering</div>
@@ -35,13 +35,15 @@
 
       </v-col>
     </v-row>
-    <v-row align="center" justify="center">
-      <v-col cols="8">
-        <div v-for="user in users" :key="user.id">
-          <h2>{{ user.username }} coins : {{user.coins}}</h2>
-        </div>
-      </v-col>
-    </v-row>
+    <v-container fill-height fluid>
+      <v-row align="center" justify="center">
+        <v-col cols="8">
+          <div v-for="user in users" :key="user.id">
+            <h2>{{ user.username }} coins : {{user.coins}}</h2>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 
