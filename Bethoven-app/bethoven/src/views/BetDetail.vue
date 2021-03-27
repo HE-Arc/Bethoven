@@ -1,7 +1,7 @@
 <template>
 <v-container>
     <v-row justify="center">
-        <v-col xl="4"   cols="12" >
+        <v-col xl="8"   cols="12" >
             <bet-card v-if="this.bet!=null"
             :bet="this.bet" 
             :detail="true" 
@@ -11,28 +11,27 @@
            
         </v-col> 
     </v-row>
-    <div>
-    <v-row v-if="0" justify="center">
-        <v-col cols=auto>
-            <v-combobox
-            clearable
-            dense
-            filled
-            solo
-            >
-            </v-combobox>
-            
-        </v-col>
-    </v-row>
-    <v-row  v-if="0" justify="center">
-        <v-btn>Reveal</v-btn>
-    </v-row>
-    <v-row justify="center">
-        <v-btn>Close</v-btn>
-    </v-row>
-    {{this.$store.state.user.id}}
-    {{this.bet.owner}}
-    {{isOwner()}}
+    <div v-if="isOwner()">
+        <v-row v-if="isClosed() && !isRevealed()" justify="center">
+            <v-col cols=auto>
+                <v-combobox
+                clearable
+                dense
+                filled
+                solo
+                :items="choices"
+                id="cbx"
+                >
+                </v-combobox>
+                
+            </v-col>
+        </v-row>
+        <v-row  v-if="isClosed() && !isRevealed()" justify="center">
+            <v-btn @click="revealAnswer">Reveal</v-btn>
+        </v-row>
+        <v-row v-if="!isClosed()" class="pt-4" justify="center">
+            <v-btn @click="closeBet">Close</v-btn>
+        </v-row>
     </div>
     
 </v-container>
@@ -45,20 +44,63 @@ export default {
   components: { BetCard },
     async beforeMount(){
         this.bet = await Api.get('bets/'+this.id);
-        console.log(this.bet.title);
+        this.choices.push(this.bet.choice0);
+        this.choices.push(this.bet.choice1);
     },
     props:{
         id:null,
     },
     data(){
         return{
-            bet:null
+            bet:null,
+            choices:[]
         }
     },
     methods:{
         isOwner(){
+            if(this.bet!=null){
             return this.$store.state.user.id==this.bet.owner;
+            }
+        },
+        isClosed(){
+            return this.bet.isClosed;
+        },
+        selectedChoice(){
+            var elem = document.getElementById('cbx');
+            if(elem.value!=''){
+                return elem.value;
+            }
+        },
+        sendIndex(){
+            if(this.choices.includes(this.selectedChoice())){
+                //console.log(this.choices.findIndex(choice => choice === this.selectedChoice()));
+                return this.choices.findIndex(choice => choice === this.selectedChoice());
+            }
+        },
+        isRevealed(){
+            if(this.bet!=null){
+                return this.bet.result!=null;
+            }
+        },
+        async revealAnswer(){
+            await Api.patch('bets/'+this.id+'/',{
+                result:this.sendIndex()
+                });
+            this.refreshBet();
+            location.reload();
+        },
+        async refreshBet() {
+            //update bet
+            this.bet = await Api.get("bets/" + this.id + "/");
+        },
+        async closeBet(){
+            await Api.patch('bets/'+this.id+'/',{
+                isClosed:true
+                });
+            this.refreshBet();
+            location.reload();
         }
+        
     }
 }
 
