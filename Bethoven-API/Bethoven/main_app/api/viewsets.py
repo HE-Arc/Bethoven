@@ -168,6 +168,8 @@ class UserViewSet(ViewsetFunctionPermissions):
                 #only asc,desc permitted (ex: coincs=asc)
                 return Response({"message": "'coins' parameters only take asc or desc values"}, status=status.HTTP_400_BAD_REQUEST)
             ordering = f"-coins" if ordering=="desc" else "coins"
+        if not username :
+                return Response({"message": "You must provide a username to search"}, status=status.HTTP_400_BAD_REQUEST)
         #Make the request, using a regex to find all user with the parameter as a part of their username
         users = BethovenUser.objects.filter(user__username__icontains=username).order_by(ordering)
         serializer = BethovenProfileCard(users, many=True) #build a list of profile cards
