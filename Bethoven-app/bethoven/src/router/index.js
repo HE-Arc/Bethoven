@@ -6,6 +6,7 @@ import Login from '../views/Login.vue'
 import FeedHome from '../views/FeedHome.vue'
 import FeedMybet from '../views/FeedMybet.vue'
 import FeedTrending from '../views/FeedTrending.vue'
+import Search from '../views/Search.vue'
 import store from '@/store'
 import Api from "@/api/ApiRequester";
 
@@ -61,6 +62,11 @@ const routes = [
     path: '/mybet',
     name: 'FeedMybet',
     component: FeedMybet,
+  },
+  {
+    path: '/search',
+    name: 'Search',
+    component: Search,
   },
   {
     path: '/about',
