@@ -17,7 +17,7 @@ import Vue from "vue";
 export default {
   components: { BetCard },
   name: "Feed",
-  async mounted() {
+  async beforeMount() {
     this.bets = await Api.get(this.query + "/?number=" + this.betSlice);
     this.bets.forEach(bet => this.currentIDs.push(bet.id));
   },
@@ -25,7 +25,6 @@ export default {
     return {
       bets: {},
       betSlice: 10,
-      periodicRefresh: null,
       query : this.initialQuery,
       currentIDs : [],
     };
