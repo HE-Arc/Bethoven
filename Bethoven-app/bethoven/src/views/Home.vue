@@ -23,6 +23,6 @@ export default Vue.extend({
       return {
       response:{},
       }
-  }
+  },
 });
 </script>
