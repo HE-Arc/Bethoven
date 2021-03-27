@@ -8,6 +8,7 @@ import FeedMybet from '../views/FeedMybet.vue'
 import FeedTrending from '../views/FeedTrending.vue'
 import store from '@/store'
 import Api from "@/api/ApiRequester";
+import BetDetail from '../views/BetDetail.vue'
 
 Vue.use(VueRouter)
 
@@ -61,6 +62,12 @@ const routes = [
     path: '/mybet',
     name: 'FeedMybet',
     component: FeedMybet,
+  },
+  {
+    path: '/bets/:id',
+    name: 'BetDetail',
+    props: true,
+    component: BetDetail,
   },
   {
     path: '/about',

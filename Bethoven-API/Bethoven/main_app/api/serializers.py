@@ -66,7 +66,7 @@ class BetSerializer(serializers.ModelSerializer):
     currentUserBet = serializers.SerializerMethodField()
     class Meta:
         model = Bet
-        fields = ('id', 'title', 'description', 'choice0', 'choice1', 'isClosed', 'result', 'bet_ratio', 'currentUserBet')
+        fields = ('id', 'title', 'description', 'choice0', 'choice1', 'isClosed', 'result', 'bet_ratio', 'currentUserBet','owner')
 
     def get_currentUserBet(self, obj):
         try:
@@ -103,7 +103,7 @@ class PartialUpdateBetSerializer(serializers.ModelSerializer):
                 instance.isClosed = closed
                 instance.save()
             return instance
-        if validated_data["result"]:
+        if "result" is not None:
             result = validated_data["result"]
             print(f"Closing with result {result}")
             if((result == 1 or result == 0) and instance.result is None and instance.isClosed):

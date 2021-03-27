@@ -4,9 +4,10 @@
     <v-card class="ma-2 pt-1">
       <!-- Title and text -->
       <v-row>
-        <v-col>
-          <v-card-title class="keep-word"
-            >{{ currentBet.title }}
+        <v-col cols="8">
+          <v-card-title class="keep-word"  @click="goToDetail" 
+            >
+            {{ currentBet.title }}
             <v-chip v-if="currentBet.isClosed" class="mx-1"> Closed </v-chip>
           </v-card-title>
         </v-col>
@@ -144,14 +145,20 @@ export default Vue.extend({
       amount0: 0,
       amount1: 0,
       currentBet: this.bet,
-      switchMe: false,
+      switchMe: this.refresh,
       periodicRefresh: this.refresh,
+      isClickable:this.clickable,
     };
   },
   props: {
     bet: {},
     detail: false,
+<<<<<<< HEAD
+    refresh : false,
+    clickable : true,
+=======
     refresh: false,
+>>>>>>> 92bdda65b974f7e92c77399f00182880921b9121
   },
   watch: {
     //called whenever switchMe changes
@@ -231,6 +238,11 @@ export default Vue.extend({
     async refreshBet() {
       //update bet
       this.currentBet = await Api.get("bets/" + this.bet.id + "/");
+    },
+    goToDetail(){
+      if(this.isClickable){
+        this.$router.push({path : "bets/"+this.currentBet.id});
+      }
     },
   },
 });
