@@ -82,16 +82,15 @@ export default {
     methods:{
         async submit(){
             try{
-                await Api.post("bets/",{
+                let answer = await Api.post("bets/",{
                     title: this.form.title,
                     description: this.form.description,
                     choice0: this.form.choice0,
                     choice1: this.form.choice1,
 
                 });
-                //TODO
-                //this.$router.push({sendToCreatedBet})
-                this.$router.push({name:"Home"})
+                let id = answer.bet.id
+                this.$router.push({path:"bets/"+id+"/"})
             }
             catch(e){
                 //Catch error
