@@ -1,7 +1,7 @@
 <!-- TEMPLATE -->
 <template>
   <div>
-    <v-card class="ma-2 pt-1" min-width="180">
+    <v-card class="ma-2 pt-1">
       <!-- Title and text -->
       <v-row>
         <v-col cols="8">
