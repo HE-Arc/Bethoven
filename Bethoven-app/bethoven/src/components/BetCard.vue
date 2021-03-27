@@ -11,7 +11,7 @@
             <v-chip v-if="currentBet.isClosed" class="mx-1"> Closed </v-chip>
           </v-card-title>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="auto" class="px-2 mx-3">
           <!-- "refresh" option -->
           <v-switch v-model="switchMe">
             <template v-slot:label>
@@ -24,32 +24,38 @@
         </v-col>
       </v-row>
 
-      <v-card-text class="mx-2 px-1 mb-3">{{ currentBet.description }}</v-card-text>
+      <v-card-text class="mx-2 px-1 mb-3">{{
+        currentBet.description
+      }}</v-card-text>
 
       <!-- 'bet' part with choices and bet buttons -->
       <v-row class="mx-2 px-1">
-          <v-card-subtitle class="pa-0">votes : {{ currentBet.bet_ratio.number }} <v-icon>mdi-account</v-icon>
-          </v-card-subtitle>
-          <v-card-subtitle class="pa-0">
-            amount : {{ currentBet.bet_ratio.total }}
-            <v-icon>mdi-alpha-b-circle-outline</v-icon>
-          </v-card-subtitle>
+        <v-card-subtitle class="pa-0"
+          >votes : {{ currentBet.bet_ratio.number }}
+          <v-icon>mdi-account</v-icon>
+        </v-card-subtitle>
+        <v-card-subtitle class="pa-0">
+          amount : {{ currentBet.bet_ratio.total }}
+          <v-icon>mdi-alpha-b-circle-outline</v-icon>
+        </v-card-subtitle>
       </v-row>
 
-      <v-row class="mx-2 px-1">
+      <v-row class="mx-2 px-1" align="center" justify="start">
         <!-- display result -->
-        <v-col class="my-2 pa-0">
-          <v-card-subtitle class="pa-0">
-            Result : <span :class="resultColor">{{ betResult }}</span>
-          </v-card-subtitle>
-        </v-col>
+        <v-card-subtitle class="ml-0 pl-0">
+          Result : <span :class="resultColor">{{ betResult }}</span>
+        </v-card-subtitle>
         <!-- If the user has already bet : Display the bet -->
-        <v-col v-if="hasAlreadyBet" class="my-2 pa-0 text-right">
-          <v-card-subtitle class="pa-0">
-            your bet : {{ userBet.amount }}
-            <v-icon :class="currentBetColor">mdi-alpha-b-circle-outline</v-icon>
-          </v-card-subtitle>
-        </v-col>
+        <v-card-subtitle v-if="userBet">
+          you bet {{ userBet.amount }}
+          <v-icon :class="currentBetColor"
+            >mdi-alpha-b-circle-outline</v-icon
+          >
+        </v-card-subtitle>
+        <v-card-subtitle v-if="hasGain">
+          you won {{ userBet.gain }}
+          <v-icon>mdi-alpha-b-circle-outline</v-icon>
+        </v-card-subtitle>
       </v-row>
 
       <v-progress-linear
@@ -147,8 +153,12 @@ export default Vue.extend({
   props: {
     bet: {},
     detail: false,
+<<<<<<< HEAD
     refresh : false,
     clickable : true,
+=======
+    refresh: false,
+>>>>>>> 92bdda65b974f7e92c77399f00182880921b9121
   },
   watch: {
     //called whenever switchMe changes
@@ -177,23 +187,27 @@ export default Vue.extend({
     userBet: function () {
       return this.currentBet.currentUserBet;
     },
+    hasGain() {
+      if(this.userBet == null)
+        return false;
+      return this.userBet.gain != null;
+    },
     currentBetColor() {
       if (this.userBet == null) return;
       return this.currentBet.currentUserBet.choice == 0
         ? "teamA--text"
         : "teamB--text";
     },
-    resultColor(){
+    resultColor() {
       if (this.currentBet.result == null) return;
-      return this.currentBet.result == 0
-        ? "teamA--text"
-        : "teamB--text";
+      return this.currentBet.result == 0 ? "teamA--text" : "teamB--text";
     },
-    betResult(){
-      if(this.currentBet.result == null)
-        return "Pending";
-      return this.currentBet.result == 0 ? this.currentBet.choice0 : this.currentBet.choice1;
-    }
+    betResult() {
+      if (this.currentBet.result == null) return "Pending";
+      return this.currentBet.result == 0
+        ? this.currentBet.choice0
+        : this.currentBet.choice1;
+    },
   },
   methods: {
     getID() {

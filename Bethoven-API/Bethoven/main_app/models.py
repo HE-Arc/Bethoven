@@ -39,24 +39,30 @@ class BethovenUser(TimeStampedModel):
 
     def get_statistics(self):
         """ Return the bet statistics of this user """
+        #init variables
         userBets = UserBet.objects.filter(user=self)
         totalBet = len(userBets)
         results = {0:0, 1:0}
         totalBetAmount = 0
+        totalWinAmount = 0
+        #loop through userbets of the user (fetch once, avoid N+1) to find its bet statistics
         for userBet in userBets:
             totalBetAmount += userBet.amount
-            if userBet.bet.result:
+            if userBet.bet.result is not None :
                 results[1 if userBet.bet.result == userBet.choice else 0]+=1
+                if userBet.gain is not None :
+                    totalWinAmount += userBet.gain
 
         won = results[1]
         lost = results[0]
-        effectiveness = 1.0 if lost==0 else (won-lost)/(won+lost)
+        effectiveness = 1.0 if lost == 0 else (won-lost)/(won+lost)
 
         return {
             "Won": won,
             "Lost": lost,
             "total bet ": totalBet,
             "totalBetAmount": totalBetAmount,
+            "totalWinAmount": totalWinAmount,
             "Effectiveness": effectiveness,
         }
 
@@ -87,7 +93,7 @@ class Bet(TimeStampedModel):
     choice1 = models.CharField(max_length=50)
     #Closure gestion
     isClosed = models.BooleanField(default=False)
-    result = models.IntegerField(blank=True, null=True)
+    result = models.IntegerField(default=None, blank=True, null=True)
     #"Own" relationship with user. Nullable as we dont want the bets to be destroyed on user deletion
     owner = models.ForeignKey(BethovenUser, related_name='BetsOwned', on_delete=models.SET_NULL, null=True)
 
@@ -97,8 +103,14 @@ class Bet(TimeStampedModel):
     def __str__(self):
         return self.title
 
+    def __eq__(self, other):
+        return isinstance(self, Bet) and isinstance(other, Bet) and self.id == other.id 
+
     def __hash__(self):
         return self.id
+
+    def __lt__(self, other):
+        return self.id < other.id
     
     def refund(self): 
         """Refund every user that has bet on this bet of their gambled amount"""
@@ -133,8 +145,14 @@ class Bet(TimeStampedModel):
         """ Return the last $number bets starting from the $id, either hot (last created) or trending (last updated)"""
         orderBy = "-updated_at" if trending else "-created_at"
         bets = Bet.objects.filter(isClosed=False).order_by(orderBy)
+
         if id is not None :
-            bets = bets.filter(id__lt=id)
+            limitBet = Bet.objects.get(id=id)
+            if trending :
+                bets = bets.filter(updated_at__lt=limitBet.updated_at)
+            else :
+                bets = bets.filter(created_at__lt=limitBet.created_at)
+
         return bets[:number]
 
     @classmethod
@@ -142,45 +160,66 @@ class Bet(TimeStampedModel):
         """ Return the "home" feed of a user : the bets from his friends"""
         follows = user.following.all()
 
-        betsFriendsOwn = Bet.objects.filter(owner__in=follows).order_by('-pk')
-        betsFriendsParticipate = UserBet.objects.filter(user__in=follows).order_by('-pk')
+        betsFriendsOwn = Bet.objects.filter(owner__in=follows).order_by('-updated_at')
+        betsFriendsParticipate = UserBet.objects.filter(user__in=follows).order_by('-updated_at')
 
         if id is not None :
-            betsFriendsOwn = betsFriendsOwn.filter(id__lt=id)
-            betsFriendsParticipate = betsFriendsParticipate.filter(bet__lt=id)
-        allBets = list(set(list(betsFriendsOwn) + [userbet.bet for userbet in betsFriendsParticipate]))
-        return allBets[-number:][::-1]
+            limitBet = Bet.objects.get(id=id)
+            betsFriendsOwn = betsFriendsOwn.filter(updated_at__lt=limitBet.updated_at)
+            betsFriendsParticipate = betsFriendsParticipate.filter(bet__updated_at__lt=limitBet.updated_at)
+
+        betsFriendsOwn = list(betsFriendsOwn)
+        betsFriendsParticipate = [userbet.bet for userbet in betsFriendsParticipate]
+        allBetsUnique = list(set(betsFriendsOwn + betsFriendsParticipate))
+        allBets = sorted(allBetsUnique, key=lambda x : x.updated_at, reverse=True)
+        return allBets[:number]
       
     @classmethod
     def betByUser(cls, number, id, user):
         """ Return the "mybet" feed, which can have the bets which the user owns or participate in """
-        betsOwned = Bet.objects.filter(owner=user).order_by('-pk')
-        betsParticipating = UserBet.objects.filter(user=user).order_by('-pk')
+        betsOwned = Bet.objects.filter(owner=user).order_by('-id')
+        betsParticipating = UserBet.objects.filter(user=user).order_by('-id')
 
         if id is not None :
             betsOwned = betsOwned.filter(id__lt=id)
             betsParticipating = betsParticipating.filter(bet__lt=id)
             
-        allBets = list(set(list(betsOwned) + [userbet.bet for userbet in betsParticipating]))
-        return allBets[-number:][::-1]
+        betsOwned = list(betsOwned)
+        betsParticipating = [userbet.bet for userbet in betsParticipating]
+        allBetsUnique = list(set(betsOwned + betsParticipating))
+        allBets = sorted(allBetsUnique, key=lambda x : x.id, reverse=True)
+        return allBets[:number]
 
     def give(self):
         """Give to winners the amount """
-
+        #init
         userBets = UserBet.objects.filter(bet=self)
-        winner = dict()
+        winners = []
         totalBetAmount = 0
         totalBetWinner = 0
+
+        #go through userbets for this bet
         for userBet in userBets:
+            #keep track of the amount
             totalBetAmount += userBet.amount
+            #winners go into the winner pool
             if userBet.choice == userBet.bet.result:
                 totalBetWinner += userBet.amount
-                winner[userBet.user] = userBet.amount
+                winners.append(userBet)
+            else :
+                #loosers have 0
+                userBet.gain = 0
+                userBet.save()
 
-        for user,amount in winner.items():
-            gain = (amount / totalBetWinner) * totalBetAmount
-            user.coins += int(round(gain))
-            user.save()
+        #go through winners to give them their gain (need totalamount and winner amount)
+        for userBet in winners:
+            gain = (userBet.amount / totalBetWinner) * totalBetAmount
+            #give gain to user
+            userBet.user.coins += int(round(gain))
+            userBet.user.save()
+            #save gain into userbet
+            userBet.gain = gain
+            userBet.save()
 
 class UserBet(TimeStampedModel):
     """
@@ -198,6 +237,7 @@ class UserBet(TimeStampedModel):
     bet = models.ForeignKey(Bet, on_delete=models.CASCADE)
     choice = models.IntegerField()
     amount = models.IntegerField()
+    gain = models.IntegerField(default=None, blank=True, null=True)
 
     def __str__(self):
         return f'{self.user} bet:{self.amount} on {self.choice}'
