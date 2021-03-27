@@ -18,8 +18,7 @@ export default {
   components: { BetCard },
   name: "Feed",
   async beforeMount() {
-    this.bets = await Api.get(this.query + "/?number=" + this.betSlice);
-    this.bets.forEach(bet => this.currentIDs.push(bet.id));
+    this.initQuery();
   },
   data() {
     return {
@@ -27,19 +26,17 @@ export default {
       betSlice: 10,
       query : this.initialQuery,
       currentIDs : [],
+      parameters : [],
     };
   },
   props: {
-    initQuery : "",
+    initialQuery : "",
   },
   created() {
     window.addEventListener("scroll", this.handleScroll);
   },
   destroyed() {
     window.removeEventListener("scroll", this.handleScroll);
-  },
-  props: {
-    initialQuery : "",
   },
   methods: {
     betsForColumn(n, columns) {
@@ -49,9 +46,24 @@ export default {
       }
       return list;
     },
+    initQuery : async function(){
+      this.bets = await Api.get(this.query + "/?number=" + this.betSlice + this.getParameters());
+      this.bets.forEach(bet => this.currentIDs.push(bet.id));
+    },
+    getParameters : function(){
+      let stringParameters = "";
+      for (const [key, value] of Object.entries(this.parameters)) {
+        stringParameters += "&" + key + "=" + value      
+      }
+      return stringParameters;
+    },
+    updateParameters(parameters){
+      this.parameters = parameters;
+      this.initQuery();
+    },
     async queryBets() {
       let newBet = await Api.get(
-        this.query + "/?number=" + this.betSlice + "&betFrom=" + this.lastID
+        this.query + "/?number=" + this.betSlice + "&betFrom=" + this.lastID + this.getParameters()
       );
       if (newBet.length <= 0) {
         //end of scrolling - no new bet !
@@ -67,17 +79,11 @@ export default {
       this.bets = this.bets.concat(newBet);
 
     },
-    handleScroll() {
+    handleScroll () {
       window.onscroll = () => {
-        let bottomOfWindow =
-          Math.max(
-            window.pageYOffset,
-            document.documentElement.scrollTop,
-            document.body.scrollTop
-          ) +
-            window.innerHeight ===
-          document.documentElement.offsetHeight;
-
+        //Credits : Renat, at https://renatello.com/check-if-a-user-has-scrolled-to-the-bottom-in-vue-js/
+        //Changed "===" to ">=" to avoid 1px difference not triggering the change
+        let bottomOfWindow = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) + window.innerHeight >= document.documentElement.offsetHeight;
         if (bottomOfWindow) {
           this.queryBets();
         }
