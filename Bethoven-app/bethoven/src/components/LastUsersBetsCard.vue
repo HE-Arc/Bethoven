@@ -1,25 +1,24 @@
 <template>
-  <v-container >
-        <v-card class="ma-2 pt-1">
-            <v-list>
-                <v-list-item v-for="bet in bets" :key="bet.id">
-                    <bet-card :bet="bet" :detail="true" :clickable="true"></bet-card>
-                </v-list-item>
-            </v-list>
-        </v-card>
-    </v-container>
+  <v-container class="ma-0 pa-0">
+    <v-list class="ma-0 pa-0">
+      <v-list-item class="ma-0 pa-0" v-for="bet in bets" :key="bet.id">
+          <v-col xl="8"   cols="12">
+        <bet-card :bet="bet" :detail="true" :clickable="true"></bet-card>
+        </v-col>
+      </v-list-item>
+    </v-list>
+  </v-container>
 </template>
 
 <script>
-import BetCard from './BetCard.vue'
+import BetCard from "./BetCard.vue";
 export default {
   components: { BetCard },
-    props:{
-        bets:null,
-    }
-}
+  props: {
+    bets: null,
+  },
+};
 </script>
 
 <style>
-
 </style>

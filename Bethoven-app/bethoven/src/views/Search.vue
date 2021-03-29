@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height fluid>
+  <v-container fill-height fluid class="pa-0 pt-3">
     <v-row align="center" justify="center">
       <v-col cols="6">
           <!-- search text field -->
@@ -35,9 +35,9 @@
 
       </v-col>
     </v-row>
-    <v-container fill-height fluid>
+    <v-container fill-height fluid class="ma-0 pa-0">
       <v-row align="center" justify="center">
-        <v-col cols="8">
+        <v-col cols="12">
           <div v-for="user in users" :key="user.id">
               <profil-card :user="user">
               </profil-card>
