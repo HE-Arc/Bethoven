@@ -5,13 +5,15 @@
       <!-- Title and text -->
       <v-row>
         <v-col cols="8">
-          <v-card-title class="keep-word"  @click="goToDetail" 
-            >
-            {{ currentBet.title }}
-            <v-chip v-if="currentBet.isClosed" class="mx-1"> Closed </v-chip>
-          </v-card-title>
-        </v-col>
-        <v-col cols="auto" class="px-2 mx-3">
+          <v-row align="start" class="pa-2">
+            <v-card-title class="keep-word" :class="isClickableCursor"  @click="goToDetail" 
+              >
+              {{ currentBet.title }}
+              <v-chip v-if="currentBet.isClosed" class="mx-1"> Closed </v-chip>
+            </v-card-title>
+          </v-row>
+        </v-col><v-spacer></v-spacer>
+        <v-col cols="auto" class="pa-2 mx-3">
           <!-- "refresh" option -->
           <v-switch v-model="switchMe">
             <template v-slot:label>
@@ -147,14 +149,14 @@ export default Vue.extend({
       currentBet: this.bet,
       switchMe: this.refresh,
       periodicRefresh: this.refresh,
-      isClickable:this.clickable,
+      isClickable: this.clickable,
     };
   },
   props: {
     bet: {},
     detail: false,
-    refresh : false,
-    clickable : true,
+    refresh: false,
+    clickable: true,
   },
   watch: {
     //called whenever switchMe changes
@@ -184,8 +186,7 @@ export default Vue.extend({
       return this.currentBet.currentUserBet;
     },
     hasGain() {
-      if(this.userBet == null)
-        return false;
+      if (this.userBet == null) return false;
       return this.userBet.gain != null;
     },
     currentBetColor() {
@@ -203,6 +204,10 @@ export default Vue.extend({
       return this.currentBet.result == 0
         ? this.currentBet.choice0
         : this.currentBet.choice1;
+    },
+    isClickableCursor() {
+      console.log(this.isClickable + "," + this.isClickable ? "clickable" : "");
+      return this.isClickable ? "clickable" : "";
     },
   },
   methods: {
@@ -236,11 +241,17 @@ export default Vue.extend({
       this.currentBet = await Api.get("bets/" + this.bet.id + "/");
       return this.currentBet;
     },
-    goToDetail(){
-      if(this.isClickable){
-        this.$router.push({path : "bets/"+this.currentBet.id});
+    goToDetail() {
+      if (this.isClickable) {
+        this.$router.push({ path: "bets/" + this.currentBet.id });
       }
     },
   },
 });
 </script> 
+
+<style scoped>
+.clickable {
+  cursor: pointer;
+}
+</style>
