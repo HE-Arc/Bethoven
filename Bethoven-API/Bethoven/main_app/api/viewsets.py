@@ -168,6 +168,8 @@ class UserViewSet(ViewsetFunctionPermissions):
                 #only asc,desc permitted (ex: coincs=asc)
                 return Response({"message": "'coins' parameters only take asc or desc values"}, status=status.HTTP_400_BAD_REQUEST)
             ordering = f"-coins" if ordering=="desc" else "coins"
+        if not username :
+                return Response({"message": "You must provide a username to search"}, status=status.HTTP_400_BAD_REQUEST)
         #Make the request, using a regex to find all user with the parameter as a part of their username
         users = BethovenUser.objects.filter(user__username__icontains=username).order_by(ordering)
         serializer = BethovenProfileCard(users, many=True) #build a list of profile cards
@@ -185,7 +187,7 @@ class BetViewSet(ViewsetFunctionPermissions):
                                     'destroy' : [isBetOwner], #allow th bet owner to delete the bet,
                                     'gamble' : [IsAuthenticated], #Must be authenticated to gamble (coins from account)
                                     'home' : [IsAuthenticated], #Must be authenticated to retrieve friend bets.
-                                    'mybet' : [IsAuthenticated] #bet by user - must be authenticated
+                                    'mybet' : [IsAuthenticated], #bet by user - must be authenticated,
                                 }
 
     def create(self,request):
@@ -214,7 +216,9 @@ class BetViewSet(ViewsetFunctionPermissions):
         """ List gives a trending feed as it requires no auth and is the 'landing page' of bethoven """
         serializer = FeedSerializer(data = request.query_params)
         if serializer.is_valid(raise_exception = True):
-            trending = serializer.data["order"]
+            #only 2 choices : trending of hot
+            ordering = serializer.data["order"]
+            trending = True if ordering == "trending" else False
             bets = Bet.trending_bets_from_id(serializer.data["number"], serializer.data["betFrom"], trending)
             return Response(BetSerializer(bets, context={'request': request}, many=True).data)
 

@@ -7,6 +7,8 @@ import BetCreate from '../views/BetCreate.vue'
 import FeedHome from '../views/FeedHome.vue'
 import FeedMybet from '../views/FeedMybet.vue'
 import FeedTrending from '../views/FeedTrending.vue'
+import Search from '../views/Search.vue'
+import Profil from '../views/Profil.vue'
 import store from '@/store'
 import Api from "@/api/ApiRequester";
 import BetDetail from '../views/BetDetail.vue'
@@ -65,6 +67,17 @@ const routes = [
     component: FeedMybet,
   },
   {
+    path: '/search',
+    name: 'Search',
+    component: Search,
+  },
+  {
+    path: '/profil/:id',
+    name: 'Profil',
+    props:true,
+    component: Profil,
+  {,
+  }
     path: '/bets/:id',
     name: 'BetDetail',
     props: true,
