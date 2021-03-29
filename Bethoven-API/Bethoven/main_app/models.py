@@ -60,7 +60,7 @@ class BethovenUser(TimeStampedModel):
         return {
             "won": won,
             "lost": lost,
-            "totalBet ": totalBet,
+            "totalBet": totalBet,
             "totalBetAmount": totalBetAmount,
             "effectiveness": effectiveness,
             "totalWinAmount": totalWinAmount,

@@ -52,7 +52,7 @@ const routes = [
     }
   },
   {
-    path: '/trending',  
+    path: '/trending',
     name: 'FeedTrending',
     component: FeedTrending,
   },
@@ -80,8 +80,9 @@ const routes = [
   {
     path: '/profil/:id',
     name: 'Profil',
-    props:true,
+    props: true,
     component: Profil,
+    
   },
   {
     path: '/bets/:id',
