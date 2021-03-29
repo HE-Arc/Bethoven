@@ -202,7 +202,7 @@ class BetViewSet(ViewsetFunctionPermissions):
             })
 
     def perform_destroy(self,instance):
-        if not instance.result : 
+        if  instance.result is not None : 
             instance.refund()
         instance.delete()
 
