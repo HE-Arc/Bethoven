@@ -159,6 +159,7 @@ yarn-error.log
 
 # VScode
 .vscode/*
+**/.env.json
 
 # End of https://www.toptal.com/developers/gitignore/api/vuejs,django
 **/.env.json
