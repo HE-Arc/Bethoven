@@ -234,6 +234,7 @@ export default Vue.extend({
     async refreshBet() {
       //update bet
       this.currentBet = await Api.get("bets/" + this.bet.id + "/");
+      return this.currentBet;
     },
     goToDetail(){
       if(this.isClickable){
