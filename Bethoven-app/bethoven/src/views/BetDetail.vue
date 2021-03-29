@@ -3,12 +3,12 @@
     <v-row justify="center">
         <v-col xl="8"   cols="12" >
             <bet-card v-if="this.bet!=null"
-            :bet="this.bet" 
+            :bet="bet" 
             :detail="true" 
             :clickable="false" 
             :refresh="true"
+            ref="betCard"
             ></bet-card>
-           
         </v-col> 
     </v-row>
     <div v-if="isOwner()">
@@ -85,19 +85,13 @@ export default {
             await Api.patch('bets/'+this.id+'/',{
                 result:this.sendIndex()
                 });
-            this.refreshBet();
-            location.reload();
-        },
-        async refreshBet() {
-            //update bet
-            this.bet = await Api.get("bets/" + this.id + "/");
+            this.bet = await this.$refs.betCard.refreshBet();
         },
         async closeBet(){
             await Api.patch('bets/'+this.id+'/',{
                 isClosed:true
                 });
-            this.refreshBet();
-            location.reload();
+            this.bet = await this.$refs.betCard.refreshBet();
         }
         
     }
