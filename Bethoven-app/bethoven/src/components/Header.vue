@@ -1,22 +1,28 @@
 <!-- TEMPLATE -->
 <template>
   <v-app-bar color="primary" dark fixed app>
+    <v-btn icon to="/trending">
+      <img alt="Vue logo" src="../assets/bethoven.png" height="40px"/>
+    </v-btn>
     <v-toolbar-title to="/">Bethoven</v-toolbar-title>
     <v-spacer></v-spacer>
 
-    <v-btn icon>
-      <v-icon>mdi-magnify</v-icon>
-    </v-btn>
 
-    <v-btn v-if="logged" icon>
-      <span> {{ userCoins }} </span>
-      <v-icon>mdi-alpha-b-circle</v-icon>
-    </v-btn>
+    <v-row align="center" justify="end" class="mx-3">
+      <v-btn icon to="/search">
+            <v-icon>mdi-magnify</v-icon>
+      </v-btn>
+      <span v-if="logged">
+          <span class="mx-2" v-if="$vuetify.breakpoint.mdAndUp">{{ uname }}</span>
+          <span class="ml-1">{{ userCoins }}</span>
+          <v-icon class="mx-1">mdi-alpha-b-circle</v-icon>
+      </span>
+    </v-row>
 
-    <v-menu left bottom>
+    <v-menu left class="mx-3">
       <template v-slot:activator="{ on, attrs }">
         <v-btn v-if="logged" icon v-bind="attrs" v-on="on">
-          <avatar  :uname="uname"></avatar>
+          <avatar :uname="uname"></avatar>
         </v-btn>
         <v-btn v-else icon v-bind="attrs" v-on="on">
           <v-icon >mdi-account-circle-outline</v-icon>
