@@ -32,6 +32,9 @@
         <v-row v-if="!isClosed()" class="pt-4" justify="center">
             <v-btn @click="closeBet">Close</v-btn>
         </v-row>
+         <v-row class="pt-4" justify="center">
+            <v-btn  color="error" @click="deleteBet">Delete</v-btn>
+        </v-row>
     </div>
     
 </v-container>
@@ -92,6 +95,11 @@ export default {
                 isClosed:true
                 });
             this.bet = await this.$refs.betCard.refreshBet();
+        },
+        async deleteBet(){
+            await Api.delete('bets/'+this.id+'/');
+            this.$router.push({name:"FeedMybet"});
+            
         }
         
     }
