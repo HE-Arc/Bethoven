@@ -117,6 +117,7 @@ class ApiRequester {
      */
     async updateUserInformations() {
         this.user = await this.get("users/me/");
+        console.log(this.user);
         store.dispatch('updateUser', this.user);
         window.sessionStorage.setItem("user", JSON.stringify(this.user));
     }
