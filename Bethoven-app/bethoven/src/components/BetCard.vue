@@ -206,7 +206,6 @@ export default Vue.extend({
         : this.currentBet.choice1;
     },
     isClickableCursor() {
-      console.log(this.isClickable + "," + this.isClickable ? "clickable" : "");
       return this.isClickable ? "clickable" : "";
     },
   },

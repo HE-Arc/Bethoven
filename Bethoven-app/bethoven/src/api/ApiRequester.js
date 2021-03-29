@@ -93,9 +93,6 @@ class ApiRequester {
             bodyFormData.append("username", credentials.username);
             bodyFormData.append("password", credentials.password);
 
-            //TO REMOVE
-            console.log(bodyFormData);
-
             const response = await this.instanceAxios.post("login/token/", bodyFormData);
 
             this.token = response.data.access_token;
@@ -118,7 +115,6 @@ class ApiRequester {
      */
     async updateUserInformations() {
         this.user = await this.get("users/me/");
-        console.log(this.user);
         store.dispatch('updateUser', this.user);
         window.sessionStorage.setItem("user", JSON.stringify(this.user));
     }
@@ -213,7 +209,6 @@ class ApiRequester {
                     const response = await this.instanceAxios(requestConfig);
                     return response.data;
                 } catch (error) {
-                    console.log(error);
                     this.logout();
                     router.push({ name: "Login" });
                 }
@@ -238,8 +233,6 @@ class ApiRequester {
         bodyFormData.append("refresh_token", this.refresh_token);
 
         const response = await this.instanceAxios.post("login/token/", bodyFormData);
-
-        console.log(response);
 
         this.token = response.data.access_token;
         this.refresh_token = response.data.refresh_token;
@@ -293,38 +286,6 @@ class ApiRequester {
     async patch(url, body) {
         return this.request("PATCH", url, body);
     }
-
-
-    //TRY TO USE FOR REFRESH AND LOGIN
-
-    // async formData(url, body) {
-    //     const requestConfig = {
-    //         method: "POST",
-    //         url: url,
-    //         headers: {
-    //             Authorization: `Bearer ${this.token}`,
-    //             "Content-Type": "multipart/form-data"
-    //         }
-    //     };
-
-
-    //     if (body) {
-    //         requestConfig.data = body;
-    //     }
-
-    //     try {
-    //         const response = await this.instanceAxios(requestConfig);
-    //         return response.data;
-    //     } catch (error) {
-    //         throw error.response.data;
-    //         // if (data.data == undefined) {
-    //         //     throw new ToudoumError(data.code, data.message, data.status);
-    //         // } else {
-    //         //     throw new ToudoumError422(data.code, data.message, data.status, data.data);
-    //         // }
-    //     }
-    // }
-
 }
 
 export default ApiRequester.instance;

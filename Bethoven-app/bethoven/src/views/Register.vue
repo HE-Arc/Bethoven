@@ -105,16 +105,6 @@ export default Vue.extend({
         if ("username" in e) {
           this.errors["username"] = e.username[0];
         }
-
-        // if (e instanceof ToudoumError422) {
-        //   // const errors: Error422 = e.data.errors;
-        //   this.errors["name"] = errors.name?.[0] ?? "";
-        //   this.errors["firstname"] = errors.firstname?.[0] ?? "";
-        //   this.errors["email"] = errors.email?.[0] ?? "";
-        //   this.errors["password"] = errors.password?.[0] ?? "";
-        // } else if (e instanceof ToudoumError) {
-        //   console.log(e.message); // Error (401, 404 or 500,...)
-        // }
       } finally {
         this.loading = false;
       }
