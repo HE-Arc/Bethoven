@@ -197,7 +197,7 @@ class BetViewSet(ViewsetFunctionPermissions):
             bet.owner = request.user.bethovenUser
             bet.save()
             return Response({
-                "Bet" : BetSerializer(bet, context={'request': request}).data,
+                "bet" : BetSerializer(bet, context={'request': request}).data,
                 "message": "Bet Created Successfully."
             })
 
