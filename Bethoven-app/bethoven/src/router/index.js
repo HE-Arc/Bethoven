@@ -82,6 +82,9 @@ const routes = [
     name: 'Profil',
     props: true,
     component: Profil,
+    // meta:{
+    //   reload:true,
+    // }
     
   },
   {

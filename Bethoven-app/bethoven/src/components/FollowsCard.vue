@@ -1,26 +1,31 @@
 <template>
   <v-container>
     <v-card class="ma-2 pt-1">
-        <v-card-title>Follows</v-card-title>
+      <v-card-title>Follows</v-card-title>
       <v-slide-group multiple show-arrows>
         <v-slide-item v-for="follow in follows" :key="follow.id">
-                
-          <v-card elevation="0" class="ma-1 pt-1 usercard" @click="goToProfil(follow.id)">
-            <v-row >
+          <v-card
+            elevation="0"
+            class="ma-1 pt-1 usercard"
+            @click="goToProfil(follow.id)"
+          >
+            <v-row>
               <v-col align="center">
                 <avatar :uname="follow.username"></avatar>
               </v-col>
             </v-row>
-            <v-row >
-              <v-col align="center" >
-                <v-card-subtitle class="ma-0 pa-0 text-truncate">{{ follow.username }}</v-card-subtitle>
+            <v-row>
+              <v-col align="center">
+                <v-card-subtitle class="ma-0 pa-0 text-truncate">{{
+                  follow.username
+                }}</v-card-subtitle>
               </v-col>
             </v-row>
           </v-card>
           <!-- </v-btn> -->
         </v-slide-item>
       </v-slide-group>
-      <span>{{userNameHover}}</span>
+      <span>{{ userNameHover }}</span>
     </v-card>
   </v-container>
 </template>
@@ -32,24 +37,22 @@ export default {
   props: {
     follows: null,
   },
-  data(){
-      return{
-          userNameHover:"",
-      }
+  data() {
+    return {
+      userNameHover: "",
+    };
   },
-  methods:{
-      goToProfil(id){
-          console.log("coucou");
-          this.$router.push({path:`/profil/${id}/`});
-          this.$location.reload();
-        //   this.$router.go();
-      }
-  }
+  methods: {
+    goToProfil(id) {
+      this.$router.push({ path: `/profil/${id}/` });
+      this.$router.go();
+    },
+  },
 };
 </script>
 
 <style>
-.usercard{
-    width: 100px;
+.usercard {
+  width: 100px;
 }
 </style>

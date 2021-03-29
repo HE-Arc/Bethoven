@@ -19,6 +19,9 @@
         <v-col align="center" cols="4" v-else-if="!this.$store.state.isUserLogged"> 
             <v-btn v-on:click="this.follow"><v-icon>mdi-account-plus</v-icon></v-btn>
         </v-col>
+        <v-col align="center" cols="4" v-else> 
+            <v-btn to="/settings/"><v-icon>mdi-account-cog</v-icon></v-btn>
+        </v-col>
         
         </v-row>
     </v-card>
