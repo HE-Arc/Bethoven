@@ -187,7 +187,7 @@ class BetViewSet(ViewsetFunctionPermissions):
                                     'destroy' : [isBetOwner], #allow th bet owner to delete the bet,
                                     'gamble' : [IsAuthenticated], #Must be authenticated to gamble (coins from account)
                                     'home' : [IsAuthenticated], #Must be authenticated to retrieve friend bets.
-                                    'mybet' : [IsAuthenticated] #bet by user - must be authenticated
+                                    'mybet' : [IsAuthenticated], #bet by user - must be authenticated,
                                 }
 
     def create(self,request):

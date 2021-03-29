@@ -39,7 +39,8 @@
       <v-row align="center" justify="center">
         <v-col cols="8">
           <div v-for="user in users" :key="user.id">
-            <h2>{{ user.username }} coins : {{user.coins}}</h2>
+              <profil-card :user="user">
+              </profil-card>
           </div>
         </v-col>
       </v-row>
@@ -50,11 +51,12 @@
 <script>
 //import Feed from "../components/Feed.vue";
 import Api from "@/api/ApiRequester";
+import ProfilCard from "../components/ProfilCard.vue";
 
 export default {
   name: "Search",
   components: {
-    //Feed,
+    ProfilCard,
   },
   data() {
     return {

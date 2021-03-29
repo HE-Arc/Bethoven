@@ -13,7 +13,7 @@
                 </tr>
                 <tr>
                     <td>Total bet</td>
-                    <td>{{ statistics. }}</td>
+                    <!--<td>{{ statistics. }}</td>-->
                 </tr>
                 <tr>
                     <td>Total bet amount</td>

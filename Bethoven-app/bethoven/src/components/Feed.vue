@@ -76,7 +76,7 @@ export default {
       });
       uniqueNewbets.forEach(bet => this.currentIDs.push(bet.id));
 
-      this.bets = this.bets.concat(newBet);
+      this.bets = this.bets.concat(uniqueNewbets);
 
     },
     handleScroll () {
