@@ -25,7 +25,7 @@ class BethovenUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BethovenUser
-        fields = ['coins', 'id', 'username', 'email']
+        fields = ['coins', 'id', 'username', 'email','following']
 
 class BethovenUpdateSerializer(serializers.ModelSerializer):
     """Bethoven serializer that also fetches the username,email from the auth.user"""
