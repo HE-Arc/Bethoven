@@ -1,7 +1,7 @@
 <!-- TEMPLATE -->
 <template>
   <v-app-bar color="primary" dark fixed app>
-    <v-btn icon to="/trending">
+    <v-btn icon to="/">
       <img alt="Vue logo" src="../assets/bethoven.png" height="40px"/>
     </v-btn>
     <v-toolbar-title to="/">Bethoven</v-toolbar-title>

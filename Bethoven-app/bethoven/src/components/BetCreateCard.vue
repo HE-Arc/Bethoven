@@ -81,21 +81,15 @@ export default {
     },
     methods:{
         async submit(){
-            try{
-                let answer = await Api.post("bets/",{
-                    title: this.form.title,
-                    description: this.form.description,
-                    choice0: this.form.choice0,
-                    choice1: this.form.choice1,
+            let answer = await Api.post("bets/",{
+                title: this.form.title,
+                description: this.form.description,
+                choice0: this.form.choice0,
+                choice1: this.form.choice1,
 
-                });
-                let id = answer.bet.id
-                this.$router.push({path:"bets/"+id+"/"})
-            }
-            catch(e){
-                //Catch error
-                console.log(e);
-            }
+            });
+            let id = answer.bet.id
+            this.$router.push({path:"bets/"+id+"/"})
         }
     },
 }
