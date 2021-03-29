@@ -1,6 +1,6 @@
 <template>
   <v-container >
-    <profil-card :user="this.user">
+    <profil-card v-if="this.user != null"  :user="this.user.user">
       <statistics-card></statistics-card>
 
 

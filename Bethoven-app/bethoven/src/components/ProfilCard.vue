@@ -3,20 +3,20 @@
     <v-card v-if="this.user!=null" class="ma-2 pt-1">
       <v-row align="center"> 
         <v-col align="center" cols="3"> 
-        <avatar :uname="this.user.user.username"></avatar>
+        <avatar :uname="this.user.username"></avatar>
         </v-col >
         <v-col cols="5"> 
-            <v-card-title v-if="this.user!=null" >{{this.user.user.username}} </v-card-title>
+            <v-card-title v-if="this.user!=null" >{{this.user.username}} </v-card-title>
             <v-card-subtitle v-if="this.user!=null">
-                {{this.user.user.coins}}
+                {{this.user.coins}}
                 <v-icon>mdi-alpha-b-circle</v-icon>
             </v-card-subtitle>
         </v-col>
-        <v-col align="center" cols="4" v-if="this.$store.isuserLogged && this.$store.state.user.id != this.user.user.id"> 
-            <v-btn v-if="this.$store.state.user.following.includes(this.user.user.id)" v-on:click="this.unfollow"><v-icon>mdi-account-remove</v-icon></v-btn>
+        <v-col align="center" cols="4" v-if="this.$store.state.isUserLogged && this.$store.state.user.id != this.user.id"> 
+            <v-btn v-if="this.$store.state.user.following.includes(this.user.id)" v-on:click="this.unfollow"><v-icon>mdi-account-remove</v-icon></v-btn>
             <v-btn v-else v-on:click="this.follow"><v-icon>mdi-account-plus</v-icon></v-btn>
         </v-col>
-        <v-col align="center" cols="4" v-else> 
+        <v-col align="center" cols="4" v-else-if="!this.$store.state.isUserLogged"> 
             <v-btn v-on:click="this.follow"><v-icon>mdi-account-plus</v-icon></v-btn>
         </v-col>
         
@@ -37,7 +37,7 @@ export default {
     methods:{
         async follow(){
             if(this.$store.state.isUserLogged){
-                await Api.get("users/"+this.user.user.id+"/follow/");
+                await Api.get("users/"+this.user.id+"/follow/");
                 Api.updateUserInformations();
             }else{
                 this.$router.push({name:"Login"});
@@ -45,7 +45,7 @@ export default {
         },
         async unfollow(){
             if(this.$store.state.isUserLogged){
-                await Api.get("users/"+this.user.user.id+"/unfollow/");
+                await Api.get("users/"+this.user.id+"/unfollow/");
                 Api.updateUserInformations();
             }else{
                 this.$router.push({name:"Login"});

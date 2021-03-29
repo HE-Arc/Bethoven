@@ -53,11 +53,11 @@ class BethovenUser(TimeStampedModel):
         effectiveness = 1.0 if lost==0 else (won-lost)/(won+lost)
 
         return {
-            "Won": won,
-            "Lost": lost,
-            "total bet ": totalBet,
+            "won": won,
+            "lost": lost,
+            "totalBet ": totalBet,
             "totalBetAmount": totalBetAmount,
-            "Effectiveness": effectiveness,
+            "effectiveness": effectiveness,
         }
 
     def last_bets(self, number):
