@@ -60,11 +60,17 @@ const routes = [
     path: '/home',
     name: 'FeedHome',
     component: FeedHome,
+    meta: {
+      onlyLogged: true
+    }
   },
   {
     path: '/mybet',
     name: 'FeedMybet',
     component: FeedMybet,
+    meta: {
+      onlyLogged: true
+    }
   },
   {
     path: '/search',
@@ -76,8 +82,8 @@ const routes = [
     name: 'Profil',
     props:true,
     component: Profil,
-  {,
-  }
+  },
+  {
     path: '/bets/:id',
     name: 'BetDetail',
     props: true,
@@ -87,6 +93,9 @@ const routes = [
     path: '/create',
     name: 'Create',
     component: BetCreate,
+    meta: {
+      onlyLogged: true
+    }
   },
   {
     path: '/about',

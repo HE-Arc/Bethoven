@@ -47,6 +47,7 @@ export default {
       return list;
     },
     initQuery : async function(){
+      this.currentIDs = [];
       this.bets = await Api.get(this.query + "/?number=" + this.betSlice + this.getParameters());
       this.bets.forEach(bet => this.currentIDs.push(bet.id));
     },
