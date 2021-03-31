@@ -206,7 +206,7 @@ class ApiRequester {
             headers: { Authorization: `Bearer ${this.token}`, }
         };
 
-        this.eventBus.$emit("test");
+        this.eventBus.$emit("alert-event", MessageCenter.Level.Success, "Coucou !");
         //store._vm.$emit('display-alert', MessageCenter.Level.Success , "this is working");
         //MessageCenter._vm.$emit('display-alert', MessageCenter.Level.Success , "this is working");
 

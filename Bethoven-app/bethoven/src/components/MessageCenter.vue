@@ -1,7 +1,6 @@
 <template>
   <v-col cols="12" >
-      <div  v-on:argless="test">a</div>
-    <v-alert dense :type="type" :value="activated" dismissible @display-alert="activate" @test="test">
+    <v-alert dense :type="type" :value="activated" dismissible @display-alert="activate">
       {{ message }}
     </v-alert>
   </v-col>
@@ -20,8 +19,7 @@ export default {
     },
     beforeMount(){
         let eventBus = Api.getEventBus();
-        eventBus.$on("test", this.test);
-        
+        eventBus.$on("alert-event", this.activate);
     },
     data() {
         return {
@@ -40,9 +38,6 @@ export default {
                 if (this.activated) this.activated = false;
             }, 2500);
         },
-        test : function() {
-            console.log("without arguments");
-        }
     },
 };
 </script>
