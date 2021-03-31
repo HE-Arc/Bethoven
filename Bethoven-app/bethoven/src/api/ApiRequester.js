@@ -1,7 +1,9 @@
 import store from '@/store';
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import MessageCenter from "@/components/MessageCenter.vue"
 import router from '../router';
 import config from '../../.env.json';
+import Vue from 'vue';
 
 /**
  * API Service to link Front-End and Back-End
@@ -16,6 +18,7 @@ class ApiRequester {
     user;
     token;
     refresh_token;
+    eventBus;
     URL = "http://localhost:8000/";
     client_id =  config.client_id;
     client_secret =  config.client_secret;
@@ -27,6 +30,7 @@ class ApiRequester {
     constructor() {
         this.user = {};
         this.token = null;
+        this.eventBus = new Vue();
         this.instanceAxios = Axios.create({
             baseURL: `${this.URL}api/`,
             headers: {
@@ -166,6 +170,14 @@ class ApiRequester {
         return this.instanceAxios.get("state");
     }
 
+    /**
+     * Get the event bus associated with the APIrequester
+     * @returns the event bus
+     */
+    getEventBus(){
+        return this.eventBus;
+    }
+
 
     /**
      * Request a GET Method
@@ -193,6 +205,10 @@ class ApiRequester {
             url: url,
             headers: { Authorization: `Bearer ${this.token}`, }
         };
+
+        this.eventBus.$emit("test");
+        //store._vm.$emit('display-alert', MessageCenter.Level.Success , "this is working");
+        //MessageCenter._vm.$emit('display-alert', MessageCenter.Level.Success , "this is working");
 
         if (body != null) {
             requestConfig.data = body;
@@ -256,7 +272,6 @@ class ApiRequester {
         store.dispatch('logUser', this.token, this.refresh_token);
         window.sessionStorage.setItem("token", this.token);
         window.sessionStorage.setItem("refresh_token", this.refresh_token);
-
     }
 
     /**
