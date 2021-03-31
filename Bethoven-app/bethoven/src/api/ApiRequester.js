@@ -200,18 +200,33 @@ class ApiRequester {
 
         try {
             const response = await this.instanceAxios(requestConfig);
+            //GLOBAL ERROR MANAGEMENT
+            if (response.data.message != null){
+                
+            }
+            if (response.data.success != null){
+                
+            }
             return response.data;
         } catch (error) {
-            if (error.response.status == 401 && error.response.data.detail == "Authentication credentials were not provided.") {
+            //Authentication error: try to use the refresh token
+            if (error.response.status == 401) {
                 try {
+                    //try once
                     await this.refresh();
                     requestConfig.headers = { Authorization: `Bearer ${this.token}`, }
                     const response = await this.instanceAxios(requestConfig);
                     return response.data;
                 } catch (error) {
+                    //if the refresh token is not good, need to login again
                     this.logout();
                     router.push({ name: "Login" });
                 }
+            } else {
+                if (response.data.error != null){
+                
+                }
+                throw(error);
             }
         }
     }
