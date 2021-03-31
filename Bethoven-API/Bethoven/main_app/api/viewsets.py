@@ -265,20 +265,19 @@ class BetViewSet(ViewsetFunctionPermissions):
 
         if serializer.is_valid(raise_exception = True):
             if(bet.isClosed):
-                return Response({"message" : 'This bet is closed !'})
+                return Response({"error" : 'This bet is closed !'})
 
             if UserBet.objects.filter(user=user,bet=bet):
-                return Response({"message" : 'You have already bet !'})
-            
+                return Response({"warning" : 'You have already bet !'})
 
             amount = request.data['amount']
             choice = request.data['choice']
 
             if amount <= 0 :
-                return Response({"message" : 'You have to bet at least 1 betcoin !'})
+                return Response({"warning" : 'You have to bet at least 1 betcoin !'})
 
             if user.coins < amount :
-                return Response({"message" : 'You are ruined !'})
+                return Response({"error" : 'You are ruined !'})
 
 
             userBet = UserBet(amount=amount,choice=choice,user=user,bet=bet)
@@ -288,5 +287,5 @@ class BetViewSet(ViewsetFunctionPermissions):
             bet.save()
             return Response({
                 "Your bet" : UserBetSerializer(userBet).data,
-                "message": "Bet Successfully."
+                "success": "Bet Successfully."
             })

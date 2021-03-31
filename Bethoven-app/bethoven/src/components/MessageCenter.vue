@@ -1,6 +1,6 @@
 <template>
-  <v-col cols="12" >
-    <v-alert dense :type="type" :value="activated" dismissible @display-alert="activate">
+  <v-col class="foreground" cols="12">
+    <v-alert  dense :type="type" :value="activated" dismissible @display-alert="activate" @click="activated=false">
       {{ message }}
     </v-alert>
   </v-col>
@@ -36,12 +36,15 @@ export default {
             this.activated = true;
             setTimeout(() => {
                 if (this.activated) this.activated = false;
-            }, 2500);
+            }, 10000);
         },
     },
 };
 </script>
 
 <style>
-
+.foreground{
+  position: fixed;  
+  z-index:100;
+}
 </style>

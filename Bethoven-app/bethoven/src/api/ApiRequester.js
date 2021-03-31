@@ -20,8 +20,8 @@ class ApiRequester {
     refresh_token;
     eventBus;
     URL = "http://localhost:8000/";
-    client_id =  config.client_id;
-    client_secret =  config.client_secret;
+    client_id = config.client_id;
+    client_secret = config.client_secret;
     grant_type = "password";
 
     /**
@@ -174,7 +174,7 @@ class ApiRequester {
      * Get the event bus associated with the APIrequester
      * @returns the event bus
      */
-    getEventBus(){
+    getEventBus() {
         return this.eventBus;
     }
 
@@ -205,23 +205,25 @@ class ApiRequester {
             url: url,
             headers: { Authorization: `Bearer ${this.token}`, }
         };
-
-        this.eventBus.$emit("alert-event", MessageCenter.Level.Success, "Coucou !");
-        //store._vm.$emit('display-alert', MessageCenter.Level.Success , "this is working");
-        //MessageCenter._vm.$emit('display-alert', MessageCenter.Level.Success , "this is working");
-
         if (body != null) {
             requestConfig.data = body;
         }
-
         try {
             const response = await this.instanceAxios(requestConfig);
             //GLOBAL ERROR MANAGEMENT
-            if (response.data.message != null){
-                
-            }
-            if (response.data.success != null){
-                
+            if (response.data != null) {
+                if (response.data.success != null) {
+                    this.eventBus.$emit("alert-event", MessageCenter.Level.Success, response.data.success);
+                }
+                if (response.data.info != null) {
+                    this.eventBus.$emit("alert-event", MessageCenter.Level.Info, response.data.info);
+                }
+                if (response.data.warning != null) {
+                    this.eventBus.$emit("alert-event", MessageCenter.Level.Warning, response.data.warning);
+                }
+                if (response.data.error != null) {
+                    this.eventBus.$emit("alert-event", MessageCenter.Level.Error, response.data.error);
+                }
             }
             return response.data;
         } catch (error) {
@@ -239,10 +241,7 @@ class ApiRequester {
                     router.push({ name: "Login" });
                 }
             } else {
-                if (response.data.error != null){
-                
-                }
-                throw(error);
+                throw (error);
             }
         }
     }
