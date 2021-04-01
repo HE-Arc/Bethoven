@@ -7,7 +7,6 @@
     <v-toolbar-title to="/">Bethoven</v-toolbar-title>
     <v-spacer></v-spacer>
 
-
     <v-row align="center" justify="end" class="mx-3">
       <v-btn icon to="/search">
             <v-icon>mdi-magnify</v-icon>

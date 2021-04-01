@@ -6,13 +6,16 @@
       <v-row>
         <v-col cols="8">
           <v-row align="start" class="pa-2">
-            <v-card-title class="keep-word" :class="isClickableCursor"  @click="goToDetail" 
-              >
+            <v-card-title
+              class="keep-word"
+              :class="isClickableCursor"
+              @click="goToDetail"
+            >
               {{ currentBet.title }}
               <v-chip v-if="currentBet.isClosed" class="mx-1"> Closed </v-chip>
             </v-card-title>
-          </v-row>
-        </v-col><v-spacer></v-spacer>
+          </v-row> </v-col
+        ><v-spacer></v-spacer>
         <v-col cols="auto" class="pa-2 mx-3">
           <!-- "refresh" option -->
           <v-switch v-model="switchMe">
@@ -50,9 +53,7 @@
         <!-- If the user has already bet : Display the bet -->
         <v-card-subtitle v-if="userBet">
           you bet {{ userBet.amount }}
-          <v-icon :class="currentBetColor"
-            >mdi-alpha-b-circle-outline</v-icon
-          >
+          <v-icon :class="currentBetColor">mdi-alpha-b-circle-outline</v-icon>
         </v-card-subtitle>
         <v-card-subtitle v-if="hasGain">
           you won {{ userBet.gain }}
@@ -225,20 +226,32 @@ export default Vue.extend({
       let amount = parseInt(choice == 0 ? this.amount0 : this.amount1);
 
       //gamble
-      this.gamble = await Api.post("bets/" + this.bet.id + "/gamble/", {
-        choice: choiceInteger,
-        amount: amount,
-      });
-
-      this.refreshBet();
-
-      //update user
-      Api.updateUserInformations();
+      try {
+        await Api.post("bets/" + this.bet.id + "/gamble/", {
+          choice: choiceInteger,
+          amount: amount,
+        });
+        //update bet value
+        this.refreshBet();
+        //update user
+        Api.updateUserInformations();
+      } catch (error) {
+        if (choice == 0) this.amount0 = 0;
+        else if (choice == 1) this.amount1 = 0;
+        console.log("Caught error in betcard");
+        console.log(error);
+      }
     },
     async refreshBet() {
       //update bet
-      this.currentBet = await Api.get("bets/" + this.bet.id + "/");
-      return this.currentBet;
+      try {
+        this.currentBet = await Api.get("bets/" + this.bet.id + "/");
+      } catch (error) {
+        console.log("Error in betcard refresh bet");
+        console.log(error);
+      } finally {
+        return this.currentBet;
+      }
     },
     goToDetail() {
       if (this.isClickable) {

@@ -48,8 +48,13 @@ export default {
     },
     initQuery : async function(){
       this.currentIDs = [];
-      this.bets = await Api.get(this.query + "/?number=" + this.betSlice + this.getParameters());
-      this.bets.forEach(bet => this.currentIDs.push(bet.id));
+      try{
+        this.bets = await Api.get(this.query + "/?number=" + this.betSlice + this.getParameters());
+        this.bets.forEach(bet => this.currentIDs.push(bet.id));
+      } catch(error){
+        console.log(error);
+        Api.displayError("Could not get feed from server");
+      }
     },
     getParameters : function(){
       let stringParameters = "";
@@ -63,9 +68,15 @@ export default {
       this.initQuery();
     },
     async queryBets() {
-      let newBet = await Api.get(
-        this.query + "/?number=" + this.betSlice + "&betFrom=" + this.lastID + this.getParameters()
-      );
+      try{
+        let newBet = await Api.get(
+          this.query + "/?number=" + this.betSlice + "&betFrom=" + this.lastID + this.getParameters()
+        );
+      } catch(error){
+        console.log(error);
+        return;
+      }
+      
       if (newBet.length <= 0) {
         //end of scrolling - no new bet !
         return;
