@@ -23,6 +23,7 @@ class ApiRequester {
     client_id = config.client_id;
     client_secret = config.client_secret;
     grant_type = "password";
+    alert_name = "alert-event";
 
     /**
      * Creates an instance of ApiRequester.
@@ -123,7 +124,7 @@ class ApiRequester {
             store.dispatch('updateUser', this.user);
             window.sessionStorage.setItem("user", JSON.stringify(this.user));
         } catch(error){
-
+            console.log("Error while updating user info " + error);
         }
     }
 
@@ -137,6 +138,7 @@ class ApiRequester {
         window.sessionStorage.removeItem("refresh_token");
         this.token = null;
         this.refresh_token = null;
+        router.push({ name: "Home" });
     }
 
     /**
@@ -155,8 +157,8 @@ class ApiRequester {
             this.login({ "username": account.username, "password": account.password });
             return response;
         } catch (error) {
-            this.eventBus.$emit("alert-event", MessageCenter.Level.Error, "Could not register user");
-            throw error.response.data;
+            this.eventBus.$emit(, MessageCenter.Level.Error, "Could not register user");
+            throw error;
         }
     }
 
@@ -177,6 +179,9 @@ class ApiRequester {
         return this.eventBus;
     }
 
+    displayError(message){
+        this.eventBus.$emit(alert_name, MessageCenter.Level.Error, message);
+    }
 
     /**
      * Request a GET Method
@@ -212,16 +217,16 @@ class ApiRequester {
             //GLOBAL ERROR MANAGEMENT
             if (response.data != null) {
                 if (response.data.success != null) {
-                    this.eventBus.$emit("alert-event", MessageCenter.Level.Success, response.data.success);
+                    this.eventBus.$emit(alert_name, MessageCenter.Level.Success, response.data.success);
                 }
                 if (response.data.info != null) {
-                    this.eventBus.$emit("alert-event", MessageCenter.Level.Info, response.data.info);
+                    this.eventBus.$emit(alert_name, MessageCenter.Level.Info, response.data.info);
                 }
                 if (response.data.warning != null) {
-                    this.eventBus.$emit("alert-event", MessageCenter.Level.Warning, response.data.warning);
+                    this.eventBus.$emit(alert_name, MessageCenter.Level.Warning, response.data.warning);
                 }
                 if (response.data.error != null) {
-                    this.eventBus.$emit("alert-event", MessageCenter.Level.Error, response.data.error);
+                    this.eventBus.$emit(alert_name, MessageCenter.Level.Error, response.data.error);
                 }
             }
             return response.data;

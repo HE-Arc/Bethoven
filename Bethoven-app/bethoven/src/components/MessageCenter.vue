@@ -23,8 +23,8 @@ export default {
     },
     data() {
         return {
-          type: "",
-          message: "",
+          type: "success",
+          message: "placeholder",
           activated: false,
           timeOut : null,
         };

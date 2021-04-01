@@ -237,13 +237,21 @@ export default Vue.extend({
         Api.updateUserInformations();
       } catch (error) {
         if (choice == 0) this.amount0 = 0;
-        else if(choice==1) this.amount1 = 0;
+        else if (choice == 1) this.amount1 = 0;
+        console.log("Caught error in betcard");
+        console.log(error);
       }
     },
     async refreshBet() {
       //update bet
-      this.currentBet = await Api.get("bets/" + this.bet.id + "/");
-      return this.currentBet;
+      try {
+        this.currentBet = await Api.get("bets/" + this.bet.id + "/");
+      } catch (error) {
+        console.log("Error in betcard refresh bet");
+        console.log(error);
+      } finally {
+        return this.currentBet;
+      }
     },
     goToDetail() {
       if (this.isClickable) {
