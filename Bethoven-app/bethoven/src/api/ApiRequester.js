@@ -157,7 +157,7 @@ class ApiRequester {
             this.login({ "username": account.username, "password": account.password });
             return response;
         } catch (error) {
-            this.eventBus.$emit(, MessageCenter.Level.Error, "Could not register user");
+            this.eventBus.$emit(this.alert_name, MessageCenter.Level.Error, "Could not register user");
             throw error;
         }
     }
@@ -180,7 +180,7 @@ class ApiRequester {
     }
 
     displayError(message){
-        this.eventBus.$emit(alert_name, MessageCenter.Level.Error, message);
+        this.eventBus.$emit(this.alert_name, MessageCenter.Level.Error, message);
     }
 
     /**
@@ -217,16 +217,16 @@ class ApiRequester {
             //GLOBAL ERROR MANAGEMENT
             if (response.data != null) {
                 if (response.data.success != null) {
-                    this.eventBus.$emit(alert_name, MessageCenter.Level.Success, response.data.success);
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Success, response.data.success);
                 }
                 if (response.data.info != null) {
-                    this.eventBus.$emit(alert_name, MessageCenter.Level.Info, response.data.info);
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Info, response.data.info);
                 }
                 if (response.data.warning != null) {
-                    this.eventBus.$emit(alert_name, MessageCenter.Level.Warning, response.data.warning);
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Warning, response.data.warning);
                 }
                 if (response.data.error != null) {
-                    this.eventBus.$emit(alert_name, MessageCenter.Level.Error, response.data.error);
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Error, response.data.error);
                 }
             }
             return response.data;
