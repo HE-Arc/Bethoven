@@ -15,7 +15,7 @@ export default {
         Warning: "warning",
         Success: "success",
         Info: "info",
-        Error: "Error",
+        Error: "error",
     },
     beforeMount(){
         let eventBus = Api.getEventBus();
@@ -23,9 +23,10 @@ export default {
     },
     data() {
         return {
-        type: "success",
-        message: "Placeholder",
-        activated: false,
+          type: "",
+          message: "",
+          activated: false,
+          timeOut : null,
         };
     },
     methods: {
@@ -33,9 +34,16 @@ export default {
             this.type = level;
             this.message = message;
             this.activated = true;
-            setTimeout(() => {
-                if (this.activated) this.activated = false;
+            this.timeOut = setTimeout(() => {
+              this.activated = false;
             }, 10000);
+        },
+        deactivate(){
+          this.activated = false;
+          if(this.timeOut != null){
+            clearTimeout(this.timeOut);
+            this.timeOut = null;
+          }
         },
     },
 };
