@@ -236,9 +236,8 @@ export default Vue.extend({
         //update user
         Api.updateUserInformations();
       } catch (error) {
-        console.log("Catched error in betcard");
         if (choice == 0) this.amount0 = 0;
-        else this.amount1 = 0;
+        else if(choice==1) this.amount1 = 0;
       }
     },
     async refreshBet() {

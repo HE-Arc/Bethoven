@@ -57,7 +57,7 @@ class UserViewSet(ViewsetFunctionPermissions):
             user = serializer.save()
             return Response({
                 "user": BethovenUserSerializer(user).data,
-                "message": "User Created Successfully.  Now perform Login to get your token",
+                "success": "User Created Successfully !",
             })
 
     def destroy(self, request, *args, **kwargs):
@@ -67,14 +67,16 @@ class UserViewSet(ViewsetFunctionPermissions):
         """
         bethovenUser = self.get_object()
         bethovenUser.user.delete()
-        return Response({"success":1, "message": "User deleted succesfully",})
+        return Response({
+                "success": "User deleted succesfully",
+            })
 
     def update(self, request, *args, **kwargs):
         """The update method uses the updateserilalizer that verifies the password is the good one before applying any change"""
         serializer = BethovenUpdateSerializer(self.get_object(), data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception = True):
             serializer.save()
-        return Response({"success":1, "message": "User updated succesfully",})
+            return Response({"success": "User updated succesfully",})
 
     def retrieve(self, request, pk):
         """
@@ -117,18 +119,17 @@ class UserViewSet(ViewsetFunctionPermissions):
         userToFollow = self.get_object()
         try:
             if(userToFollow == request.user.bethovenUser):
-                (success,message) = (0, "Impossible to follow yourself")
+                (level,message) = ("warning", "Impossible to follow yourself")
             elif request.user.bethovenUser.following.filter(pk=pk).exists():
-                (success,message) = (0, f"Already following {userToFollow.user.username}")
+                (level,message) = ("info", f"Already following {userToFollow.user.username}")
             else:
                 request.user.bethovenUser.following.add(userToFollow)
-                (success,message) = (1, f"You are now following {userToFollow.user.username}")
+                (level,message) = ("success", f"You are now following {userToFollow.user.username}")
         except Exception:
-            (success,message) = (0, "Follow failed")
+            (level,message) = ("error", "Follow failed")
         finally:  
             return Response({   
-                        "success" : success,
-                        "message" : message
+                        level : message,
             })
     
     @action(detail=True)
@@ -140,18 +141,17 @@ class UserViewSet(ViewsetFunctionPermissions):
         userToUnfollow = self.get_object()
         try:
             if(userToUnfollow == request.user.bethovenUser):
-                (success,message) = (0, "Impossible to unfollow yourself")
+                (level,message) = ("warning", "Impossible to unfollow yourself")
             elif not request.user.bethovenUser.following.filter(pk=pk).exists():
-                (success,message) = (0, f"Can not unfollow {userToUnfollow.user.username} as you do not follow him")
+                (level,message) = ("info", f"Can not unfollow {userToUnfollow.user.username} as you do not follow him")
             else:
                 request.user.bethovenUser.following.remove(userToUnfollow)
-                (success,message) = (1, f"You have unfollowed {userToUnfollow.user.username}")
+                (level,message) = ("success", f"You have unfollowed {userToUnfollow.user.username}")
         except Exception:
-            (success,message) = (0, "Unfollow failed")
+            (level,message) = ("error", "Unfollow failed")
         finally:
             return Response({   
-                        "success" : success,
-                        "message" : message
+                        level : message,
             })
 
     @action(detail=False)
@@ -198,7 +198,7 @@ class BetViewSet(ViewsetFunctionPermissions):
             bet.save()
             return Response({
                 "bet" : BetSerializer(bet, context={'request': request}).data,
-                "message": "Bet Created Successfully."
+                "success": "Bet Created Successfully."
             })
 
     def perform_destroy(self,instance):
@@ -207,7 +207,7 @@ class BetViewSet(ViewsetFunctionPermissions):
         instance.delete()
 
     def update(self, request, pk=None):
-        response = {'message': 'Update function is not offered in this path.'}
+        response = {'error': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
@@ -268,7 +268,7 @@ class BetViewSet(ViewsetFunctionPermissions):
                 return Response({"error" : 'This bet is closed !'})
 
             if UserBet.objects.filter(user=user,bet=bet):
-                return Response({"warning" : 'You have already bet !'})
+                return Response({"info" : 'You have already bet !'})
 
             amount = request.data['amount']
             choice = request.data['choice']

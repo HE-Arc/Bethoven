@@ -118,9 +118,13 @@ class ApiRequester {
      * Update user in session and store vuex
      */
     async updateUserInformations() {
-        this.user = await this.get("users/me/");
-        store.dispatch('updateUser', this.user);
-        window.sessionStorage.setItem("user", JSON.stringify(this.user));
+        try{
+            this.user = await this.get("users/me/");
+            store.dispatch('updateUser', this.user);
+            window.sessionStorage.setItem("user", JSON.stringify(this.user));
+        } catch(error){
+
+        }
     }
 
     /**
@@ -150,14 +154,9 @@ class ApiRequester {
             });
             this.login({ "username": account.username, "password": account.password });
             return response;
-
         } catch (error) {
+            this.eventBus.$emit("alert-event", MessageCenter.Level.Error, "Could not register user");
             throw error.response.data;
-            if (data.data == undefined) {
-                // throw new ToudoumError(data.code, data.message, data.status);
-            } else {
-                // throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            }
         }
     }
 
@@ -245,6 +244,8 @@ class ApiRequester {
             }
         }
     }
+
+
 
     /**
      * Refresh token
