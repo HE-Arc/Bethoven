@@ -30,7 +30,6 @@ export default {
     },
     methods: {
         activate(level, message) {
-            console.log("Coucou from activate");
             this.type = level;
             this.message = message;
             this.activated = true;
