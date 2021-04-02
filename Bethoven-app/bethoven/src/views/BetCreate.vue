@@ -8,7 +8,7 @@ import Api from "@/api/ApiRequester";
 import BetCreateCard from "../components/BetCreateCard.vue";
 export default Vue.extend({
   components: { BetCreateCard },
-    name: "Home",
+    name: "Create",
 });
 </script>
 
