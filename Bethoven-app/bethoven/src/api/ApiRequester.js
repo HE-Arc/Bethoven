@@ -218,6 +218,9 @@ class ApiRequester {
                     router.push({ name: "Login" });
                 }
             }
+            else{
+                throw error;
+            }
         }
     }
 
