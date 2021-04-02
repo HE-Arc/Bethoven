@@ -255,7 +255,7 @@ export default Vue.extend({
     },
     goToDetail() {
       if (this.isClickable) {
-        this.$router.push({ path: "bets/" + this.currentBet.id });
+        this.$router.push({ path: "/bets/" + this.currentBet.id });
       }
     },
   },

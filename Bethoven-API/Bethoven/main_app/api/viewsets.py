@@ -96,7 +96,7 @@ class UserViewSet(ViewsetFunctionPermissions):
             "user" : userProfileSerializer.data,
             "follows" : followersProfilesSerializers.data,
             "statistics" : user.get_statistics(),
-            "last bets" : lastBetsSerializer.data,
+            "lastBets" : lastBetsSerializer.data,
         })
 
     @action(detail=False)
