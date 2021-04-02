@@ -32,5 +32,3 @@ jobs:
         with:
           target: production
           deploy_key: ${{ secrets.SERVER_PRIVATE }}
-          #enc_rsa_key_val: ${{ secrets.DEPLOY_ENC_PRIVATE_KEY }}
-          ssh-private-key: ${{ secrets.PRIV_KEY }}
