@@ -6,7 +6,10 @@
           <avatar :uname="this.user.username"></avatar>
         </v-col>
         <v-col cols="5">
-          <v-card-title v-if="this.user != null"
+          <v-card-title
+            v-if="this.user != null"
+            :class="isClickableCursor"
+            @click="goToDetail"
             >{{ this.user.username }}
           </v-card-title>
           <v-card-subtitle v-if="this.user != null">
@@ -40,6 +43,9 @@
             ><v-icon>mdi-account-plus</v-icon></v-btn
           >
         </v-col>
+        <v-col align="center" cols="4" v-else>
+          <v-btn to="/settings/"><v-icon>mdi-account-cog</v-icon></v-btn>
+        </v-col>
       </v-row>
     </v-card>
   </v-container>
@@ -53,6 +59,12 @@ export default {
   components: { Avatar },
   props: {
     user: {},
+    clickable: true,
+  },
+  data() {
+    return {
+      isClickable: this.clickable,
+    };
   },
   methods: {
     async follow() {
@@ -79,6 +91,23 @@ export default {
         this.$router.push({ name: "Login" });
       }
     },
+    goToDetail() {
+      if (this.isClickable) {
+        this.$router.push({ path: "/profil/" + this.user.id });
+      }
+    },
+  },
+    
+  computed: {
+    isClickableCursor() {
+      return this.isClickable ? "clickable" : "";
+    },
   },
 };
 </script>
+
+<style scoped>
+.clickable {
+  cursor: pointer;
+}
+</style>

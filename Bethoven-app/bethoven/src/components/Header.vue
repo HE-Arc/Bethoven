@@ -76,7 +76,7 @@ export default Vue.extend({
       await Api.logout();
     },
     MyProfil() {
-      this.$router.push({path:"/profil/"+this.$store.state.user.id})
+      this.$router.push({path:"/profil/"+this.$store.state.user.id+"/"})
     },
     
   },

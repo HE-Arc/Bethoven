@@ -12,5 +12,6 @@ new Vue({
   router,
   store,
   vuetify,
-  render: h => h(App)
+  render: h => h(App),
+  // watch: { $route(to, from) { if(to.currentRoute.meta.reload==true){ router.go(); } } },
 }).$mount('#app')

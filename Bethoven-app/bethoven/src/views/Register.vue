@@ -67,22 +67,6 @@
 <script>
 import Vue from "vue";
 import Api from "@/api/ApiRequester";
-// import { ToudoumError } from "@/api/ToudoumError";
-// import { ToudoumError422 } from "@/api/ToudoumError422";
-
-// interface Error422 {
-//     email?: Array<string>;
-//     name?: Array<string>;
-//     firstname?: Array<string>;
-//     password?: Array<string>;
-// }
-
-// interface ErrorState422 {
-//     email: string;
-//     name: string;
-//     firstname: string;
-//     password: string;
-// }
 
 export default Vue.extend({
   name: "Register",
