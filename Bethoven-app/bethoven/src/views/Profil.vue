@@ -23,7 +23,11 @@ export default Vue.extend({
   components: { Avatar, ProfilCard, StatisticsCard, FollowsCard,LastUsersBetsCard },
   name: "Profil",
   async beforeMount() {
-    this.user = await Api.get("users/"+this.idUserProfil);
+    try{
+      this.user = await Api.get("users/"+this.idUserProfil);
+    } catch(e){
+      console.log(e);
+    }
   },
   props :{
       id:null,

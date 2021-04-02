@@ -1,7 +1,9 @@
 import store from '@/store';
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import MessageCenter from "@/components/MessageCenter.vue"
 import router from '../router';
 import config from '../../.env.json';
+import Vue from 'vue';
 
 /**
  * API Service to link Front-End and Back-End
@@ -16,10 +18,12 @@ class ApiRequester {
     user;
     token;
     refresh_token;
+    eventBus;
     URL = "http://localhost:8000/";
-    client_id =  config.client_id;
-    client_secret =  config.client_secret;
+    client_id = config.client_id;
+    client_secret = config.client_secret;
     grant_type = "password";
+    alert_name = "alert-event";
 
     /**
      * Creates an instance of ApiRequester.
@@ -27,6 +31,7 @@ class ApiRequester {
     constructor() {
         this.user = {};
         this.token = null;
+        this.eventBus = new Vue();
         this.instanceAxios = Axios.create({
             baseURL: `${this.URL}api/`,
             headers: {
@@ -93,9 +98,6 @@ class ApiRequester {
             bodyFormData.append("username", credentials.username);
             bodyFormData.append("password", credentials.password);
 
-            //TO REMOVE
-            console.log(bodyFormData);
-
             const response = await this.instanceAxios.post("login/token/", bodyFormData);
 
             this.token = response.data.access_token;
@@ -117,10 +119,13 @@ class ApiRequester {
      * Update user in session and store vuex
      */
     async updateUserInformations() {
-        this.user = await this.get("users/me/");
-        console.log(this.user);
-        store.dispatch('updateUser', this.user);
-        window.sessionStorage.setItem("user", JSON.stringify(this.user));
+        try{
+            this.user = await this.get("users/me/");
+            store.dispatch('updateUser', this.user);
+            window.sessionStorage.setItem("user", JSON.stringify(this.user));
+        } catch(error){
+            console.log("Error while updating user info " + error);
+        }
     }
 
     /**
@@ -133,6 +138,7 @@ class ApiRequester {
         window.sessionStorage.removeItem("refresh_token");
         this.token = null;
         this.refresh_token = null;
+        router.push({ name: "Home" });
     }
 
     /**
@@ -150,14 +156,9 @@ class ApiRequester {
             });
             this.login({ "username": account.username, "password": account.password });
             return response;
-
         } catch (error) {
-            throw error.response.data;
-            if (data.data == undefined) {
-                // throw new ToudoumError(data.code, data.message, data.status);
-            } else {
-                // throw new ToudoumError422(data.code, data.message, data.status, data.data);
-            }
+            this.eventBus.$emit(this.alert_name, MessageCenter.Level.Error, "Could not register user");
+            throw error;
         }
     }
 
@@ -170,6 +171,17 @@ class ApiRequester {
         return this.instanceAxios.get("state");
     }
 
+    /**
+     * Get the event bus associated with the APIrequester
+     * @returns the event bus
+     */
+    getEventBus() {
+        return this.eventBus;
+    }
+
+    displayError(message){
+        this.eventBus.$emit(this.alert_name, MessageCenter.Level.Error, message);
+    }
 
     /**
      * Request a GET Method
@@ -197,29 +209,48 @@ class ApiRequester {
             url: url,
             headers: { Authorization: `Bearer ${this.token}`, }
         };
-
         if (body != null) {
             requestConfig.data = body;
         }
-
         try {
             const response = await this.instanceAxios(requestConfig);
+            //GLOBAL ERROR MANAGEMENT
+            if (response.data != null) {
+                if (response.data.success != null) {
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Success, response.data.success);
+                }
+                if (response.data.info != null) {
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Info, response.data.info);
+                }
+                if (response.data.warning != null) {
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Warning, response.data.warning);
+                }
+                if (response.data.error != null) {
+                    this.eventBus.$emit(this.alert_name, MessageCenter.Level.Error, response.data.error);
+                }
+            }
             return response.data;
         } catch (error) {
-            if (error.response.status == 401 && error.response.data.detail == "Authentication credentials were not provided.") {
+            //Authentication error: try to use the refresh token
+            if (error.response.status == 401) {
                 try {
+                    //try once
                     await this.refresh();
                     requestConfig.headers = { Authorization: `Bearer ${this.token}`, }
                     const response = await this.instanceAxios(requestConfig);
                     return response.data;
                 } catch (error) {
-                    console.log(error);
+                    //if the refresh token is not good, need to login again
                     this.logout();
                     router.push({ name: "Login" });
                 }
+            } else {
+                throw (error);
             }
         }
     }
+
+
 
     /**
      * Refresh token
@@ -239,8 +270,6 @@ class ApiRequester {
 
         const response = await this.instanceAxios.post("login/token/", bodyFormData);
 
-        console.log(response);
-
         this.token = response.data.access_token;
         this.refresh_token = response.data.refresh_token;
 
@@ -248,7 +277,6 @@ class ApiRequester {
         store.dispatch('logUser', this.token, this.refresh_token);
         window.sessionStorage.setItem("token", this.token);
         window.sessionStorage.setItem("refresh_token", this.refresh_token);
-
     }
 
     /**
@@ -293,38 +321,6 @@ class ApiRequester {
     async patch(url, body) {
         return this.request("PATCH", url, body);
     }
-
-
-    //TRY TO USE FOR REFRESH AND LOGIN
-
-    // async formData(url, body) {
-    //     const requestConfig = {
-    //         method: "POST",
-    //         url: url,
-    //         headers: {
-    //             Authorization: `Bearer ${this.token}`,
-    //             "Content-Type": "multipart/form-data"
-    //         }
-    //     };
-
-
-    //     if (body) {
-    //         requestConfig.data = body;
-    //     }
-
-    //     try {
-    //         const response = await this.instanceAxios(requestConfig);
-    //         return response.data;
-    //     } catch (error) {
-    //         throw error.response.data;
-    //         // if (data.data == undefined) {
-    //         //     throw new ToudoumError(data.code, data.message, data.status);
-    //         // } else {
-    //         //     throw new ToudoumError422(data.code, data.message, data.status, data.data);
-    //         // }
-    //     }
-    // }
-
 }
 
 export default ApiRequester.instance;

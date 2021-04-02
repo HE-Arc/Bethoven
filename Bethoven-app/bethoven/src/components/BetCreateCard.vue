@@ -87,14 +87,11 @@ export default {
                     description: this.form.description,
                     choice0: this.form.choice0,
                     choice1: this.form.choice1,
-
                 });
                 let id = answer.bet.id
                 this.$router.push({path:"bets/"+id+"/"})
-            }
-            catch(e){
-                //Catch error
-                console.log(e);
+            } catch(error){
+                console.log("Error while creating bet " + error);
             }
         }
     },

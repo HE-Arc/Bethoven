@@ -69,16 +69,24 @@ export default {
   methods: {
     async follow() {
       if (this.$store.state.isUserLogged) {
-        await Api.get("users/" + this.user.id + "/follow/");
-        Api.updateUserInformations();
+        try {
+          await Api.get("users/" + this.user.id + "/follow/");
+          Api.updateUserInformations();
+        } catch (e) {
+          console.log(e);
+        }
       } else {
         this.$router.push({ name: "Login" });
       }
     },
     async unfollow() {
       if (this.$store.state.isUserLogged) {
-        await Api.get("users/" + this.user.id + "/unfollow/");
-        Api.updateUserInformations();
+        try {
+          await Api.get("users/" + this.user.id + "/unfollow/");
+          Api.updateUserInformations();
+        } catch (e) {
+          console.log(e);
+        }
       } else {
         this.$router.push({ name: "Login" });
       }
@@ -89,6 +97,7 @@ export default {
       }
     },
   },
+    
   computed: {
     isClickableCursor() {
       return this.isClickable ? "clickable" : "";

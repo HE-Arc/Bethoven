@@ -86,6 +86,7 @@ export default Vue.extend({
           this.errors['password'] = "Not the same password";
         }
       } catch (e) {
+        console.log(e);
         if ("username" in e) {
           this.errors["username"] = e.username[0];
         }

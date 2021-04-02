@@ -81,7 +81,11 @@ export default {
         if(this.ordering){
             orderingQuery = "&coins=" + this.ordering;
         }
-        this.users = await Api.get("users/search/?username=" + this.unameQuery + orderingQuery);
+        try{
+          this.users = await Api.get("users/search/?username=" + this.unameQuery + orderingQuery);
+        } catch(e){
+          console.log(e);
+        }
     },
     finishedTyping() {
         if (this.delayedSearch != null) {
