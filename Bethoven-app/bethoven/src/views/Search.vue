@@ -39,7 +39,7 @@
       <v-row align="center" justify="center">
         <v-col cols="12">
           <div v-for="user in users" :key="user.id">
-              <profil-card :user="user">
+              <profil-card :user="user" :clickable="true">
               </profil-card>
           </div>
         </v-col>
