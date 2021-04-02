@@ -3,6 +3,7 @@ from main_app.models import *
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
+from .custom_exceptions import UserUpdateError
 
 ###     USER SERIALIZERS    ###
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -34,21 +35,24 @@ class BethovenUpdateSerializer(serializers.ModelSerializer):
     password = serializers.CharField()
     #Not mandatory to change the password at every update, still a possibility
     new_password = serializers.CharField(required=False, default=None)
+    user = serializers.CharField(required=False,default=None)
 
     class Meta:
         model = BethovenUser
-        fields = ['username', 'email', 'password', 'new_password']
+        fields = ['username', 'email', 'password', 'new_password','user']
 
     def update(self, instance, validated_data):
         """ Updating a user requires that the password fits the old one to change the data. """
         if not instance.user.check_password(validated_data["password"]) :
-            raise serializers.ValidationError("Your password must be the same")
-
+            raise  UserUpdateError("Your password must be the same")
         user = instance.user
         user.email = validated_data["email"]
         user.username = validated_data["username"]
+
+        if user.username != validated_data["user"] and User.objects.filter(username=user.username).exists():
+            raise UserUpdateError(f'Username {user.username} is not available.')
         if validated_data["new_password"]:
-            user.password = validated_data["new_password"]
+            user.set_password(validated_data["new_password"])
         user.save()
         return instance.user
         
@@ -105,7 +109,6 @@ class PartialUpdateBetSerializer(serializers.ModelSerializer):
             return instance
         if "result" is not None:
             result = validated_data["result"]
-            print(f"Closing with result {result}")
             if((result == 1 or result == 0) and instance.result is None and instance.isClosed):
                 instance.result = result
                 instance.save()
