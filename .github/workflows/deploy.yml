@@ -31,4 +31,5 @@ jobs:
         uses: miloserdow/capistrano-deploy@master
         with:
           target: production
-          deploy_key: ${{ secrets.SERVER_PRIVATE }}
+          deploy_key: ""
+          enc_rsa_key_val: ${{ secrets.SERVER_PRIVATE }}
