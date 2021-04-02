@@ -34,11 +34,3 @@ jobs:
           deploy_key: ${{ secrets.SERVER_PRIVATE }}
           #enc_rsa_key_val: ${{ secrets.DEPLOY_ENC_PRIVATE_KEY }}
           ssh-private-key: ${{ secrets.PRIV_KEY }}
-
-      - name: Add know Host
-        run: |
-          ssh-keyscan -p ${{ secrets.DEPLOY_HOST_SSH_PORT }} ${{ secrets.DEPLOY_HOST }} >> /home/poweruser/.ssh/known_hosts
-
-      - name: Deploy
-        run: |
-          bunde exec cap production deploy
