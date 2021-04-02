@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import permissions, viewsets, status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .custom_perm import isSelfUser , isBetOwner
+from .custom_exceptions import UserUpdateError
+from rest_framework.status import HTTP_422_UNPROCESSABLE_ENTITY
 import logging
 
 
@@ -72,9 +74,13 @@ class UserViewSet(ViewsetFunctionPermissions):
     def update(self, request, *args, **kwargs):
         """The update method uses the updateserilalizer that verifies the password is the good one before applying any change"""
         serializer = BethovenUpdateSerializer(self.get_object(), data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-        return Response({"success":1, "message": "User updated succesfully",})
+        try:
+            if serializer.is_valid():
+                serializer.save(user=request.user.username)
+                return Response({"success":1, "message": "User updated succesfully",})
+        except UserUpdateError as e :
+            return Response({"error": str(e)}, status = HTTP_422_UNPROCESSABLE_ENTITY)
+        
 
     def retrieve(self, request, pk):
         """
