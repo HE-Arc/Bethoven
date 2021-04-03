@@ -13,6 +13,8 @@ const vuetify = new Vuetify({
         teamB: colors.orange.darken1,
       },
       dark: {
+        teamA: colors.red.lighten2,
+        teamB: colors.blue.lighten2,
       },
     },
   },

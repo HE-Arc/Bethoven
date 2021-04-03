@@ -113,6 +113,16 @@ class UserViewSet(ViewsetFunctionPermissions):
         serializer = BethovenUserSerializer(user)
         return Response(serializer.data)   
 
+    @action(detail=True, methods=['post'])
+    def addcoins(self, request, pk):
+        try:
+            user = self.get_object()
+            user.coins += 15
+            user.save()
+            return Response({"success" : "Added 15betcoins to your account"})
+        except :
+            return Response({"error" : "Couldn't add coins to your account"})
+
     @action(detail=True)
     def follow(self, request, pk):
         """
