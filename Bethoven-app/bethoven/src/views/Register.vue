@@ -67,22 +67,6 @@
 <script>
 import Vue from "vue";
 import Api from "@/api/ApiRequester";
-// import { ToudoumError } from "@/api/ToudoumError";
-// import { ToudoumError422 } from "@/api/ToudoumError422";
-
-// interface Error422 {
-//     email?: Array<string>;
-//     name?: Array<string>;
-//     firstname?: Array<string>;
-//     password?: Array<string>;
-// }
-
-// interface ErrorState422 {
-//     email: string;
-//     name: string;
-//     firstname: string;
-//     password: string;
-// }
 
 export default Vue.extend({
   name: "Register",
@@ -102,19 +86,10 @@ export default Vue.extend({
           this.errors['password'] = "Not the same password";
         }
       } catch (e) {
+        console.log(e);
         if ("username" in e) {
           this.errors["username"] = e.username[0];
         }
-
-        // if (e instanceof ToudoumError422) {
-        //   // const errors: Error422 = e.data.errors;
-        //   this.errors["name"] = errors.name?.[0] ?? "";
-        //   this.errors["firstname"] = errors.firstname?.[0] ?? "";
-        //   this.errors["email"] = errors.email?.[0] ?? "";
-        //   this.errors["password"] = errors.password?.[0] ?? "";
-        // } else if (e instanceof ToudoumError) {
-        //   console.log(e.message); // Error (401, 404 or 500,...)
-        // }
       } finally {
         this.loading = false;
       }

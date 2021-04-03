@@ -1,12 +1,11 @@
 <!-- TEMPLATE -->
 <template>
   <v-app-bar color="primary" dark fixed app>
-    <v-btn icon to="/trending">
+    <v-btn icon to="/">
       <img alt="Vue logo" src="../assets/bethoven.png" height="40px"/>
     </v-btn>
     <v-toolbar-title to="/">Bethoven</v-toolbar-title>
     <v-spacer></v-spacer>
-
 
     <v-row align="center" justify="end" class="mx-3">
       <v-btn icon to="/search">
@@ -79,12 +78,11 @@ export default Vue.extend({
       await Api.logout();
     },
     MyProfil() {
-      this.$router.push({path:"/profil/"+this.$store.state.user.id});
+      this.$router.push({path:"/profil/"+this.$store.state.user.id+"/"})
     },
     setting(){
       this.$router.push({path:"/settings/"});
     },
-    
   },
 });
 </script>

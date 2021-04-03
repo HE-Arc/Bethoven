@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height fluid>
+  <v-container fill-height fluid class="pa-0 pt-3">
     <v-row align="center" justify="center">
       <v-col cols="6">
           <!-- search text field -->
@@ -35,11 +35,11 @@
 
       </v-col>
     </v-row>
-    <v-container fill-height fluid>
+    <v-container fill-height fluid class="ma-0 pa-0">
       <v-row align="center" justify="center">
-        <v-col cols="8">
+        <v-col cols="12">
           <div v-for="user in users" :key="user.id">
-              <profil-card :user="user">
+              <profil-card :user="user" :clickable="true">
               </profil-card>
           </div>
         </v-col>
@@ -81,7 +81,11 @@ export default {
         if(this.ordering){
             orderingQuery = "&coins=" + this.ordering;
         }
-        this.users = await Api.get("users/search/?username=" + this.unameQuery + orderingQuery);
+        try{
+          this.users = await Api.get("users/search/?username=" + this.unameQuery + orderingQuery);
+        } catch(e){
+          console.log(e);
+        }
     },
     finishedTyping() {
         if (this.delayedSearch != null) {

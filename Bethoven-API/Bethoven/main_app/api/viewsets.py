@@ -59,7 +59,7 @@ class UserViewSet(ViewsetFunctionPermissions):
             user = serializer.save()
             return Response({
                 "user": BethovenUserSerializer(user).data,
-                "message": "User Created Successfully.  Now perform Login to get your token",
+                "success": "User Created Successfully !",
             })
 
     def destroy(self, request, *args, **kwargs):
@@ -69,7 +69,9 @@ class UserViewSet(ViewsetFunctionPermissions):
         """
         bethovenUser = self.get_object()
         bethovenUser.user.delete()
-        return Response({"success":1, "message": "User deleted succesfully",})
+        return Response({
+                "success": "User deleted succesfully",
+            })
 
     def update(self, request, *args, **kwargs):
         """The update method uses the updateserilalizer that verifies the password is the good one before applying any change"""
@@ -80,7 +82,7 @@ class UserViewSet(ViewsetFunctionPermissions):
                 return Response({"success":1, "message": "User updated succesfully",})
         except UserUpdateError as e :
             return Response({"error": str(e)}, status = HTTP_422_UNPROCESSABLE_ENTITY)
-        
+
 
     def retrieve(self, request, pk):
         """
@@ -100,7 +102,7 @@ class UserViewSet(ViewsetFunctionPermissions):
             "user" : userProfileSerializer.data,
             "follows" : followersProfilesSerializers.data,
             "statistics" : user.get_statistics(),
-            "last bets" : lastBetsSerializer.data,
+            "lastBets" : lastBetsSerializer.data,
         })
 
     @action(detail=False)
@@ -133,18 +135,17 @@ class UserViewSet(ViewsetFunctionPermissions):
         userToFollow = self.get_object()
         try:
             if(userToFollow == request.user.bethovenUser):
-                (success,message) = (0, "Impossible to follow yourself")
+                (level,message) = ("warning", "Impossible to follow yourself")
             elif request.user.bethovenUser.following.filter(pk=pk).exists():
-                (success,message) = (0, f"Already following {userToFollow.user.username}")
+                (level,message) = ("info", f"Already following {userToFollow.user.username}")
             else:
                 request.user.bethovenUser.following.add(userToFollow)
-                (success,message) = (1, f"You are now following {userToFollow.user.username}")
+                (level,message) = ("success", f"You are now following {userToFollow.user.username}")
         except Exception:
-            (success,message) = (0, "Follow failed")
+            (level,message) = ("error", "Follow failed")
         finally:  
             return Response({   
-                        "success" : success,
-                        "message" : message
+                        level : message,
             })
     
     @action(detail=True)
@@ -156,18 +157,17 @@ class UserViewSet(ViewsetFunctionPermissions):
         userToUnfollow = self.get_object()
         try:
             if(userToUnfollow == request.user.bethovenUser):
-                (success,message) = (0, "Impossible to unfollow yourself")
+                (level,message) = ("warning", "Impossible to unfollow yourself")
             elif not request.user.bethovenUser.following.filter(pk=pk).exists():
-                (success,message) = (0, f"Can not unfollow {userToUnfollow.user.username} as you do not follow him")
+                (level,message) = ("info", f"Can not unfollow {userToUnfollow.user.username} as you do not follow him")
             else:
                 request.user.bethovenUser.following.remove(userToUnfollow)
-                (success,message) = (1, f"You have unfollowed {userToUnfollow.user.username}")
+                (level,message) = ("success", f"You have unfollowed {userToUnfollow.user.username}")
         except Exception:
-            (success,message) = (0, "Unfollow failed")
+            (level,message) = ("error", "Unfollow failed")
         finally:
             return Response({   
-                        "success" : success,
-                        "message" : message
+                        level : message,
             })
 
     @action(detail=False)
@@ -214,7 +214,7 @@ class BetViewSet(ViewsetFunctionPermissions):
             bet.save()
             return Response({
                 "bet" : BetSerializer(bet, context={'request': request}).data,
-                "message": "Bet Created Successfully."
+                "success": "Bet Created Successfully."
             })
 
     def perform_destroy(self,instance):
@@ -223,7 +223,7 @@ class BetViewSet(ViewsetFunctionPermissions):
         instance.delete()
 
     def update(self, request, pk=None):
-        response = {'message': 'Update function is not offered in this path.'}
+        response = {'error': 'Update function is not offered in this path.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
@@ -281,20 +281,19 @@ class BetViewSet(ViewsetFunctionPermissions):
 
         if serializer.is_valid(raise_exception = True):
             if(bet.isClosed):
-                return Response({"message" : 'This bet is closed !'})
+                return Response({"error" : 'This bet is closed !'})
 
             if UserBet.objects.filter(user=user,bet=bet):
-                return Response({"message" : 'You have already bet !'})
-            
+                return Response({"info" : 'You have already bet !'})
 
             amount = request.data['amount']
             choice = request.data['choice']
 
             if amount <= 0 :
-                return Response({"message" : 'You have to bet at least 1 betcoin !'})
+                return Response({"warning" : 'You have to bet at least 1 betcoin !'})
 
             if user.coins < amount :
-                return Response({"message" : 'You are ruined !'})
+                return Response({"error" : 'You are ruined !'})
 
 
             userBet = UserBet(amount=amount,choice=choice,user=user,bet=bet)
@@ -304,5 +303,5 @@ class BetViewSet(ViewsetFunctionPermissions):
             bet.save()
             return Response({
                 "Your bet" : UserBetSerializer(userBet).data,
-                "message": "Bet Successfully."
+                "success": "Bet Successfully."
             })

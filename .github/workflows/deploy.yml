@@ -9,7 +9,7 @@ jobs:
   deliver-main:
     runs-on: ubuntu-latest
     env:
-      path: /var/www/
+      path: ~/www/
 
     steps:
       #- name: stop server during deployment
@@ -17,8 +17,8 @@ jobs:
 
       - name: checkout main branch
         uses: actions/checkout@v2
-        #with:
-          #ref: develop
+        with:
+          ref: develop
           #in case we want to deploy a certain branch (ex : serve main and develop at different points)
           
       - name: setup ruby
@@ -26,16 +26,10 @@ jobs:
         with:
           ruby-version: 3.0.0
           bundler-cache: true
-
-      - name: Ajout clé SSH
-        uses: webfactory/ssh-agent@v0.5.1
+          
+      - name: Capistrano deploy
+        uses: miloserdow/capistrano-deploy@master
         with:
-          ssh-private-key: ${{ secrets.PRIV_KEY }}
-
-      - name: Add know Host
-        run: |
-          ssh-keyscan -p ${{ secrets.DEPLOY_HOST_SSH_PORT }} ${{ secrets.DEPLOY_HOST }} >> /home/poweruser/.ssh/known_hosts
-
-      - name: Deploy
-        run: |
-          bunde exec cap production deploy
+          target: production
+          deploy_key: ""
+          enc_rsa_key_val: ${{ secrets.SERVER_PRIVATE }}

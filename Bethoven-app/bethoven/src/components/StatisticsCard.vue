@@ -1,19 +1,20 @@
 <template>
     <v-container >
         <v-card class="ma-2 pt-1">
+        <v-card-title>Statistics</v-card-title>
         <v-simple-table>
             <tbody>
                 <tr>
                     <td>Won</td>
-                    <td>{{ statistics.Won }}</td>
+                    <td>{{ statistics.won }}</td>
                 </tr>
                 <tr>
                     <td>Lost</td>
-                    <td>{{ statistics.Lost }}</td>
+                    <td>{{ statistics.lost }}</td>
                 </tr>
                 <tr>
                     <td>Total bet</td>
-                    <!--<td>{{ statistics. }}</td>-->
+                    <td>{{ statistics.totalBet }}</td>
                 </tr>
                 <tr>
                     <td>Total bet amount</td>
@@ -21,7 +22,11 @@
                 </tr>
                 <tr>
                     <td>Effectiveness</td>
-                    <td>{{ statistics.Effectiveness }}</td>
+                    <td>{{ statistics.effectiveness }}</td>
+                </tr>
+                <tr>
+                    <td>Total win amount</td>
+                    <td>{{ statistics.totalWinAmount }}</td>
                 </tr>
             </tbody>
         </v-simple-table>
