@@ -1,5 +1,6 @@
 <template>
   <v-container class="ma-0 pa-0">
+    <v-card-title>Last bets</v-card-title>
     <v-list class="ma-0 pa-0">
       <v-list-item class="ma-0 pa-0" v-for="bet in bets" :key="bet.id">
         <v-col xl="8" cols="12">

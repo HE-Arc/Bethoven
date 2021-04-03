@@ -87,7 +87,7 @@ export default {
       if (this.delayedSearch != null) {
         clearTimeout(this.delayedSearch);
       }
-      setTimeout(this.search, this.searchDelayMilliseconds);
+      this.delayedSearch = setTimeout(this.search, this.searchDelayMilliseconds);
     },
   },
 };

@@ -70,8 +70,9 @@ export default {
       this.initQuery();
     },
     async queryBets() {
+      let newBet = null;
       try {
-        let newBet = await Api.get(
+        newBet = await Api.get(
           `${this.query}/?number=${this.betSlice}&betFrom=${
             this.lastID
           }${this.getParameters()}`
@@ -81,7 +82,7 @@ export default {
         return;
       }
 
-      if (newBet.length <= 0) {
+      if (newBet == null || newBet.length <= 0) {
         //end of scrolling - no new bet !
         return;
       }

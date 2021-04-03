@@ -1,5 +1,5 @@
 <template>
-  <v-container class="ma-0 pa-0">
+  <v-container class="ma-0 pa-0" fill-height fluid>
     <profil-card v-if="this.user != null" :user="this.user.user"> </profil-card>
     <statistics-card
       v-if="this.user != null"

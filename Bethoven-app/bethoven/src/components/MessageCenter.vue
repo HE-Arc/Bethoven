@@ -45,11 +45,11 @@ export default {
       }, 10000);
     },
     deactivate() {
-      this.activated = false;
       if (this.timeOut != null) {
         clearTimeout(this.timeOut);
         this.timeOut = null;
       }
+      this.activated = false;
     },
   },
 };
