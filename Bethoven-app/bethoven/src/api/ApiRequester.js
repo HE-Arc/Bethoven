@@ -247,6 +247,9 @@ class ApiRequester {
             } else {
                 throw (error);
             }
+            else{
+                throw error;
+            }
         }
     }
 

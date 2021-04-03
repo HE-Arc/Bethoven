@@ -29,9 +29,11 @@
       </template>
 
       <v-list v-if="logged">
-        <!-- TODO ADD SETTINGS -->
         <v-list-item v-on:click="MyProfil()">
           <v-list-item-title>My Profil</v-list-item-title>
+        </v-list-item>
+        <v-list-item v-on:click="setting()">
+          <v-list-item-title>Settings</v-list-item-title>
         </v-list-item>
         <v-list-item v-on:click="logout()">
           <v-list-item-title>Logout</v-list-item-title>
@@ -78,7 +80,9 @@ export default Vue.extend({
     MyProfil() {
       this.$router.push({path:"/profil/"+this.$store.state.user.id+"/"})
     },
-    
+    setting(){
+      this.$router.push({path:"/settings/"});
+    },
   },
 });
 </script>

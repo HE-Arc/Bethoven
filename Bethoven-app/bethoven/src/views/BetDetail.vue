@@ -25,6 +25,9 @@
       <v-row v-if="!isClosed()" class="pt-4" justify="center">
         <v-btn @click="closeBet">Close</v-btn>
       </v-row>
+      <v-row class="pt-4" justify="center">
+            <v-btn  color="error" @click="deleteBet">Delete</v-btn>
+        </v-row>
     </div>
   </v-container>
 </template>
@@ -67,7 +70,22 @@ export default {
         return elem.value;
       }
     },
-    sendIndex() {
+    methods:{
+        isOwner(){
+            if(this.bet!=null){
+            return this.$store.state.user.id==this.bet.owner;
+            }
+        },
+        isClosed(){
+            return this.bet.isClosed;
+        },
+        selectedChoice(){
+            var elem = document.getElementById('cbx');
+            if(elem.value!=''){
+                return elem.value;
+            }
+        },
+            sendIndex() {
       if (this.choices.includes(this.selectedChoice())) {
         return this.choices.findIndex(
           (choice) => choice === this.selectedChoice()
@@ -99,8 +117,17 @@ export default {
         console.log(e);
       }
     },
-  },
+    async deleteBet(){
+      try {
+        await Api.delete('bets/'+this.id+'/');
+        this.$router.push({name:"FeedMybet"});
+        } catch (e) {
+        console.log(e);
+      }
+    },
+   }
 };
+
 </script>
 
 <style>

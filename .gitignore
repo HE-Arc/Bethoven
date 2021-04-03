@@ -163,4 +163,3 @@ yarn-error.log
 **/.env.json
 
 # End of https://www.toptal.com/developers/gitignore/api/vuejs,django
-**/.env.json

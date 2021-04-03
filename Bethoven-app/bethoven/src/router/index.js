@@ -12,6 +12,8 @@ import Profil from '../views/Profil.vue'
 import store from '@/store'
 import Api from "@/api/ApiRequester";
 import BetDetail from '../views/BetDetail.vue'
+import Settings from '../views/Settings.vue'
+
 
 Vue.use(VueRouter)
 
@@ -97,6 +99,14 @@ const routes = [
     path: '/create',
     name: 'Create',
     component: BetCreate,
+    meta: {
+      onlyLogged: true
+    }
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
     meta: {
       onlyLogged: true
     }

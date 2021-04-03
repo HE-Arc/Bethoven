@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import permissions, viewsets, status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .custom_perm import isSelfUser , isBetOwner
+from .custom_exceptions import UserUpdateError
+from rest_framework.status import HTTP_422_UNPROCESSABLE_ENTITY
 import logging
 
 
@@ -74,9 +76,13 @@ class UserViewSet(ViewsetFunctionPermissions):
     def update(self, request, *args, **kwargs):
         """The update method uses the updateserilalizer that verifies the password is the good one before applying any change"""
         serializer = BethovenUpdateSerializer(self.get_object(), data=request.data)
-        if serializer.is_valid(raise_exception = True):
-            serializer.save()
-            return Response({"success": "User updated succesfully",})
+        try:
+            if serializer.is_valid():
+                serializer.save(user=request.user.username)
+                return Response({"success":1, "message": "User updated succesfully",})
+        except UserUpdateError as e :
+            return Response({"error": str(e)}, status = HTTP_422_UNPROCESSABLE_ENTITY)
+
 
     def retrieve(self, request, pk):
         """
@@ -108,6 +114,16 @@ class UserViewSet(ViewsetFunctionPermissions):
         user = request.user.bethovenUser
         serializer = BethovenUserSerializer(user)
         return Response(serializer.data)   
+
+    @action(detail=True, methods=['post'])
+    def addcoins(self, request, pk):
+        try:
+            user = self.get_object()
+            user.coins += 15
+            user.save()
+            return Response({"success" : "Added 15betcoins to your account"})
+        except :
+            return Response({"error" : "Couldn't add coins to your account"})
 
     @action(detail=True)
     def follow(self, request, pk):
@@ -202,7 +218,7 @@ class BetViewSet(ViewsetFunctionPermissions):
             })
 
     def perform_destroy(self,instance):
-        if not instance.result : 
+        if  instance.result is not None : 
             instance.refund()
         instance.delete()
 
