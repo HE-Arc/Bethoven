@@ -82,8 +82,8 @@ export default Vue.extend({
             password_confirmation: this.passwordConfirmation,
           });
           this.$router.push({ name: "Home" });
-        }else{
-          this.errors['password'] = "Not the same password";
+        } else {
+          this.errors["password"] = "Not the same password";
         }
       } catch (e) {
         console.log(e);

@@ -227,7 +227,7 @@ export default Vue.extend({
 
       //gamble
       try {
-        await Api.post("bets/" + this.bet.id + "/gamble/", {
+        await Api.post(`bets/${this.bet.id}/gamble/`, {
           choice: choiceInteger,
           amount: amount,
         });
@@ -245,7 +245,7 @@ export default Vue.extend({
     async refreshBet() {
       //update bet
       try {
-        this.currentBet = await Api.get("bets/" + this.bet.id + "/");
+        this.currentBet = await Api.get(`bets/${this.bet.id}/`);
       } catch (error) {
         console.log("Error in betcard refresh bet");
         console.log(error);
@@ -255,7 +255,7 @@ export default Vue.extend({
     },
     goToDetail() {
       if (this.isClickable) {
-        this.$router.push({ path: "/bets/" + this.currentBet.id });
+        this.$router.push({ path: `/bets/${this.currentBet.id}` });
       }
     },
   },

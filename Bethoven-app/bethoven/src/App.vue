@@ -13,11 +13,11 @@
 import Vue from "vue";
 import Header from "@/components/Header.vue";
 import Navbar from "@/components/Navbar.vue";
-import MessageCenter from "@/components/MessageCenter.vue"
+import MessageCenter from "@/components/MessageCenter.vue";
 import "@/assets/styles/main.scss";
 
 export default Vue.extend({
   name: "App",
-  components: { Header, Navbar, MessageCenter},
+  components: { Header, Navbar, MessageCenter },
 });
 </script>

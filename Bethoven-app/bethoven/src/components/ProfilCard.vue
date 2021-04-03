@@ -70,7 +70,7 @@ export default {
     async follow() {
       if (this.$store.state.isUserLogged) {
         try {
-          await Api.get("users/" + this.user.id + "/follow/");
+          await Api.get(`${users}/${this.user.id}/follow/`);
           Api.updateUserInformations();
         } catch (e) {
           console.log(e);
@@ -82,7 +82,7 @@ export default {
     async unfollow() {
       if (this.$store.state.isUserLogged) {
         try {
-          await Api.get("users/" + this.user.id + "/unfollow/");
+          await Api.get(`${users}/${this.user.id}/unfollow/`);
           Api.updateUserInformations();
         } catch (e) {
           console.log(e);
@@ -93,11 +93,11 @@ export default {
     },
     goToDetail() {
       if (this.isClickable) {
-        this.$router.push({ path: "/profil/" + this.user.id });
+        this.$router.push({ path: `/profil/${this.user.id}` });
       }
     },
   },
-    
+
   computed: {
     isClickableCursor() {
       return this.isClickable ? "clickable" : "";

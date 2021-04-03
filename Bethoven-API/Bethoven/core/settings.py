@@ -92,12 +92,11 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+#Try to import DATABASES from the env file, default to sqlite as it works everywhere
+#Idea from Zest : 
 try:
-    print("trying")
     from .env import DATABASES
 except Exception as e:
-    print("fail")
-    print(e)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

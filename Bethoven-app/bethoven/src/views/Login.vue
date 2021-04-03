@@ -50,8 +50,6 @@
 <script>
 import Vue from "vue";
 import Api from "@/api/ApiRequester";
-// import { ToudoumError } from "@/api/ToudoumError";
-// import { ToudoumError422 } from "@/api/ToudoumError422";
 
 export default Vue.extend({
   name: "Login",
@@ -65,18 +63,9 @@ export default Vue.extend({
         });
         this.errorPost = "";
 
-        console.log(this.$store.state.isUserLogged);
-
-
         this.$router.push({ name: "Home" });
       } catch (e) {
-        console.log(e.data+" COUCOU"); // Errors with sent data
         this.errorPost = e.message;
-        // if (e ToudoumError422) {
-        //   console.log(e.data); // Errors with sent data
-        // } else if (e instanceof ToudoumError) {
-        //   this.errorPost = e.message; // Error (401, 404 or 500,...)
-        // }
       } finally {
         this.loading = false;
       }

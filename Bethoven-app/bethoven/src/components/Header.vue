@@ -2,19 +2,19 @@
 <template>
   <v-app-bar color="primary" dark fixed app>
     <v-btn icon to="/">
-      <img alt="Vue logo" src="../assets/bethoven.png" height="40px"/>
+      <img alt="Vue logo" src="../assets/bethoven.png" height="40px" />
     </v-btn>
     <v-toolbar-title to="/">Bethoven</v-toolbar-title>
     <v-spacer></v-spacer>
 
     <v-row align="center" justify="end" class="mx-3">
       <v-btn icon to="/search">
-            <v-icon>mdi-magnify</v-icon>
+        <v-icon>mdi-magnify</v-icon>
       </v-btn>
       <span v-if="logged">
-          <span class="mx-2" v-if="$vuetify.breakpoint.mdAndUp">{{ uname }}</span>
-          <span class="ml-1">{{ userCoins }}</span>
-          <v-icon class="mx-1">mdi-alpha-b-circle</v-icon>
+        <span class="mx-2" v-if="$vuetify.breakpoint.mdAndUp">{{ uname }}</span>
+        <span class="ml-1">{{ userCoins }}</span>
+        <v-icon class="mx-1">mdi-alpha-b-circle</v-icon>
       </span>
     </v-row>
 
@@ -24,7 +24,7 @@
           <avatar :uname="uname"></avatar>
         </v-btn>
         <v-btn v-else icon v-bind="attrs" v-on="on">
-          <v-icon >mdi-account-circle-outline</v-icon>
+          <v-icon>mdi-account-circle-outline</v-icon>
         </v-btn>
       </template>
 
@@ -69,7 +69,7 @@ export default Vue.extend({
     userCoins() {
       return this.$store.state.user.coins;
     },
-    uname(){
+    uname() {
       return this.$store.state.user.username;
     },
   },
@@ -78,10 +78,10 @@ export default Vue.extend({
       await Api.logout();
     },
     MyProfil() {
-      this.$router.push({path:"/profil/"+this.$store.state.user.id+"/"})
+      this.$router.push({ path: `/profil/${this.$store.state.user.id}/` });
     },
-    setting(){
-      this.$router.push({path:"/settings/"});
+    setting() {
+      this.$router.push({ path: "/settings/" });
     },
   },
 });

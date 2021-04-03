@@ -19,7 +19,7 @@ class ApiRequester {
     token;
     refresh_token;
     eventBus;
-    URL = "http://localhost:8000/";
+    URL = config.apiUrl;
     client_id = config.client_id;
     client_secret = config.client_secret;
     grant_type = "password";
@@ -246,9 +246,6 @@ class ApiRequester {
                 }
             } else {
                 throw (error);
-            }
-            else{
-                throw error;
             }
         }
     }

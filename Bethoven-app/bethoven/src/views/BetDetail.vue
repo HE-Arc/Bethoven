@@ -26,8 +26,8 @@
         <v-btn @click="closeBet">Close</v-btn>
       </v-row>
       <v-row class="pt-4" justify="center">
-            <v-btn  color="error" @click="deleteBet">Delete</v-btn>
-        </v-row>
+        <v-btn color="error" @click="deleteBet">Delete</v-btn>
+      </v-row>
     </div>
   </v-container>
 </template>
@@ -39,7 +39,7 @@ export default {
   components: { BetCard },
   async beforeMount() {
     try {
-      this.bet = await Api.get("bets/" + this.id);
+      this.bet = await Api.get(`bets/${this.id}`);
       this.choices.push(this.bet.choice0);
       this.choices.push(this.bet.choice1);
     } catch (e) {
@@ -70,22 +70,7 @@ export default {
         return elem.value;
       }
     },
-    methods:{
-        isOwner(){
-            if(this.bet!=null){
-            return this.$store.state.user.id==this.bet.owner;
-            }
-        },
-        isClosed(){
-            return this.bet.isClosed;
-        },
-        selectedChoice(){
-            var elem = document.getElementById('cbx');
-            if(elem.value!=''){
-                return elem.value;
-            }
-        },
-            sendIndex() {
+    sendIndex() {
       if (this.choices.includes(this.selectedChoice())) {
         return this.choices.findIndex(
           (choice) => choice === this.selectedChoice()
@@ -99,7 +84,7 @@ export default {
     },
     async revealAnswer() {
       try {
-        await Api.patch("bets/" + this.id + "/", {
+        await Api.patch(`bets/${this.id}/`, {
           result: this.sendIndex(),
         });
         this.bet = await this.$refs.betCard.refreshBet();
@@ -109,7 +94,7 @@ export default {
     },
     async closeBet() {
       try {
-        await Api.patch("bets/" + this.id + "/", {
+        await Api.patch(`bets/${this.id}/`, {
           isClosed: true,
         });
         this.bet = await this.$refs.betCard.refreshBet();
@@ -117,17 +102,16 @@ export default {
         console.log(e);
       }
     },
-    async deleteBet(){
+    async deleteBet() {
       try {
-        await Api.delete('bets/'+this.id+'/');
-        this.$router.push({name:"FeedMybet"});
-        } catch (e) {
+        await Api.delete(`bets/${this.id}/`);
+        this.$router.push({ name: "FeedMybet" });
+      } catch (e) {
         console.log(e);
       }
     },
-   }
+  },
 };
-
 </script>
 
 <style>
